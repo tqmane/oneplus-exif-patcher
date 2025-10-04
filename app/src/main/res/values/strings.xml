@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">OnePlus EXIF Patcher</string>
+    <string name="select_images">画像を選択</string>
+    <string name="select_destination">保存先を選択</string>
+    <string name="process_images">画像を処理</string>
+    <string name="processing">処理中…</string>
+    <string name="success">完了</string>
+    <string name="error">エラー</string>
+    <string name="images_selected">%d 枚の画像を選択済み</string>
+    <string name="destination_selected">保存先: %s</string>
+    <string name="processing_progress">%d / %d を処理中</string>
+    <string name="all_images_processed">すべての画像を処理しました！</string>
+    <string name="error_no_images">画像が選択されていません</string>
+    <string name="error_no_destination">保存先が選択されていません</string>
+    <string name="error_processing">処理エラー: %s</string>
+    <string name="app_description">OnePlus用にEXIFメタデータを自動パッチ</string>
+    <string name="select_images_description">複数の画像を選択してEXIFメタデータを修正します</string>
+    <string name="destination_description">処理済み画像の保存先フォルダを選択します</string>
+</resources>
