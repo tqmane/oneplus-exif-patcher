@@ -2,10 +2,10 @@ package com.oneplus.exifpatcher.data
 
 import android.content.Context
 import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
 import com.oneplus.exifpatcher.util.ExifPatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
 
 /**
  * Repository class for handling image processing operations
@@ -26,14 +26,9 @@ class ImageRepository(private val context: Context) {
         onProgress: (Int, Int) -> Unit
     ): Result<Int> = withContext(Dispatchers.IO) {
         try {
-            // Convert destination URI to File
-            val destinationPath = destinationUri.path ?: throw IllegalArgumentException("Invalid destination path")
-            val destinationDir = File(destinationPath)
-            
-            // Ensure destination directory exists
-            if (!destinationDir.exists()) {
-                destinationDir.mkdirs()
-            }
+            // Convert destination URI to DocumentFile
+            val destinationDir = DocumentFile.fromTreeUri(context, destinationUri)
+                ?: throw IllegalArgumentException("Invalid destination URI")
             
             if (!destinationDir.isDirectory) {
                 throw IllegalArgumentException("Destination is not a directory")

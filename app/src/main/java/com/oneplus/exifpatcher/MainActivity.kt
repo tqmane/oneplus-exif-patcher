@@ -1,5 +1,6 @@
 package com.oneplus.exifpatcher
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -56,6 +57,11 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         contract = ActivityResultContracts.OpenDocumentTree()
     ) { uri ->
         uri?.let {
+            // Take persistable URI permission
+            context.contentResolver.takePersistableUriPermission(
+                it,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
             viewModel.setDestinationUri(it)
         }
     }

@@ -64,6 +64,9 @@ dependencies {
     // ExifInterface for EXIF manipulation
     implementation("androidx.exifinterface:exifinterface:1.3.7")
     
+    // DocumentFile for handling content:// URIs
+    implementation("androidx.documentfile:documentfile:1.0.1")
+    
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     
