@@ -14,9 +14,9 @@ import java.io.FileOutputStream
 object ExifPatcher {
     
     // OnePlus-specific EXIF values
-    private const val DEVICE_MODEL = "0xcdcc8c3fff"
-    private const val USER_COMMENT = "oplus_1048864"
     private const val MAKE = "OnePlus"
+    private const val USER_COMMENT = "oplus_1048864"
+    private const val DEVICE_VALUE = "0xcdcc8c3fff"  // XMP Device tag
     
     /**
      * Process an image by applying OnePlus EXIF patches
@@ -52,9 +52,43 @@ object ExifPatcher {
             val exif = ExifInterface(tempFile.absolutePath)
             
             // Set OnePlus-specific EXIF tags
-            exif.setAttribute(ExifInterface.TAG_MODEL, DEVICE_MODEL)
-            exif.setAttribute(ExifInterface.TAG_USER_COMMENT, USER_COMMENT)
-            exif.setAttribute(ExifInterface.TAG_MAKE, MAKE)
+            exif.setAttribute(ExifInterface.TAG_MAKE, MAKE)  // Set Make to "OnePlus"
+            // Note: We preserve the original Model metadata
+            exif.setAttribute(ExifInterface.TAG_USER_COMMENT, USER_COMMENT)  // Set UserComment to "oplus_1048864"
+            
+            // Try to set XMP Device tag
+            // Note: Android's ExifInterface has limited XMP write support
+            // The device value should be set in XMP metadata
+            try {
+                // Get existing XMP data or create new
+                val xmpData = exif.getAttribute(ExifInterface.TAG_XMP) ?: ""
+                
+                // Check if Device tag already exists in XMP
+                val updatedXmp = if (xmpData.contains("Device")) {
+                    // Replace existing Device value
+                    xmpData.replace(Regex("Device[^>]*>[^<]*"), "Device>$DEVICE_VALUE")
+                } else if (xmpData.isNotEmpty()) {
+                    // Add Device tag to existing XMP
+                    xmpData.replace("</rdf:Description>", 
+                        "  <Device>$DEVICE_VALUE</Device>\n</rdf:Description>")
+                } else {
+                    // Create minimal XMP with Device tag
+                    """<?xpacket begin="" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/">
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <rdf:Description rdf:about="">
+      <Device>$DEVICE_VALUE</Device>
+    </rdf:Description>
+  </rdf:RDF>
+</x:xmpmeta>
+<?xpacket end="w"?>"""
+                }
+                
+                exif.setAttribute(ExifInterface.TAG_XMP, updatedXmp)
+            } catch (e: Exception) {
+                // XMP setting failed, continue with other tags
+                e.printStackTrace()
+            }
             
             // Save the modified EXIF data
             exif.saveAttributes()
