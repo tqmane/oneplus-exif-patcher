@@ -2,9 +2,8 @@ package com.oneplus.exifpatcher.watermark.parser
 
 import android.content.Context
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.oneplus.exifpatcher.watermark.model.WatermarkStyle
-import java.io.InputStreamReader
+import java.util.Locale
 
 /**
  * Hasselbladウォーターマークスタイル定義を読み込むパーサー
@@ -21,12 +20,12 @@ class WatermarkStyleParser(private val context: Context) {
      */
     fun loadStyleFromAssets(fileName: String): WatermarkStyle? {
         return try {
-            val inputStream = context.assets.open("watermark/$fileName")
-            val reader = InputStreamReader(inputStream)
-            val style = gson.fromJson(reader, WatermarkStyle::class.java)
-            reader.close()
-            inputStream.close()
-            style
+            context.assets.open("watermark/$fileName").use { inputStream ->
+                val json = inputStream.bufferedReader().use { it.readText() }
+                parseModernStyle(json)
+                    ?: parseLegacyStyle(json, fileName.removeSuffix(".json"))
+                    ?: createDefaultStyle()
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -58,6 +57,404 @@ class WatermarkStyleParser(private val context: Context) {
         
         return styles
     }
+
+    private fun parseModernStyle(json: String): WatermarkStyle? {
+        return try {
+            gson.fromJson(json, WatermarkStyle::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private fun parseLegacyStyle(json: String, fallbackId: String): WatermarkStyle? {
+        return try {
+            val rawStyle = gson.fromJson(json, RawWatermarkStyle::class.java)
+            convertLegacyStyle(rawStyle, fallbackId)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun convertLegacyStyle(raw: RawWatermarkStyle, fallbackId: String): WatermarkStyle? {
+        val baseSize = raw.baseImageSize ?: 360f
+        val legacyElements = mutableListOf<LegacyRenderableElement>()
+        val bitmaps = raw.bitmaps.orEmpty()
+
+        if (bitmaps.isEmpty()) {
+            return null
+        }
+
+        bitmaps.forEach { bitmap ->
+            val containerWidth = bitmap.width?.takeIf { it > 0f }
+                ?: (baseSize - (raw.size?.totalHorizontalMargin() ?: 0f))
+            val containerHeight = bitmap.height?.takeIf { it > 0f }
+                ?: maxOf(
+                    raw.size?.bottomMargin ?: 0f,
+                    raw.size?.topMargin ?: 0f,
+                    baseSize * 0.25f
+                )
+            val effectiveWidth = containerWidth.coerceAtLeast(baseSize * 0.3f)
+            val effectiveHeight = containerHeight.coerceAtLeast(baseSize * 0.15f)
+
+            val context = LegacyLayoutContext(
+                originX = raw.size?.leftMargin ?: 0f,
+                originY = raw.size?.topMargin ?: 0f,
+                width = effectiveWidth,
+                height = effectiveHeight,
+                orientation = bitmap.orientation ?: 0
+            )
+
+            processLegacyElements(bitmap.elements.orEmpty(), context, legacyElements)
+        }
+
+        if (legacyElements.isEmpty()) {
+            return null
+        }
+
+        val minX = legacyElements.minOf { it.x }
+        val minY = legacyElements.minOf { it.y }
+        val maxX = legacyElements.maxOf { it.x + it.width }
+        val maxY = legacyElements.maxOf { it.y + it.height }
+
+        val normalizedElements = legacyElements.map {
+            it.toWatermarkElement(it.x - minX, it.y - minY)
+        }
+
+        val styleWidth = (maxX - minX).coerceAtLeast(1f)
+        val styleHeight = (maxY - minY).coerceAtLeast(1f)
+
+        return WatermarkStyle(
+            id = raw.styleId ?: fallbackId,
+            name = raw.styleName ?: raw.name ?: raw.styleId ?: fallbackId,
+            width = styleWidth,
+            height = styleHeight,
+            orientation = bitmaps.firstOrNull()?.orientation ?: 0,
+            elements = normalizedElements
+        )
+    }
+
+    private fun processLegacyElements(
+        elements: List<RawElement>,
+        context: LegacyLayoutContext,
+        output: MutableList<LegacyRenderableElement>
+    ) {
+        var cursorX = 0f
+        var cursorY = 0f
+
+        elements.forEach { element ->
+            if (element.visible == false) {
+                return@forEach
+            }
+
+            val content = element.content ?: return@forEach
+            val position = element.position
+            val leftMargin = position?.leftMargin ?: 0f
+            val topMargin = position?.topMargin ?: 0f
+            val rightMargin = position?.rightMargin ?: 0f
+            val bottomMargin = position?.bottomMargin ?: 0f
+            val gravity = position?.layoutGravity?.lowercase(Locale.ROOT) ?: ""
+
+            val elementWidth = computeElementWidth(content, element.paint, element.elements, context.width)
+            val elementHeight = computeElementHeight(content, element.paint, element.elements, context.height)
+
+            var x = context.originX + cursorX + leftMargin
+            var y = context.originY + cursorY + topMargin
+
+            if (gravity.contains("right")) {
+                x = context.originX + context.width - elementWidth - rightMargin
+            } else if (gravity.contains("center") && !gravity.contains("vertical")) {
+                x = context.originX + (context.width - elementWidth) / 2f
+            }
+
+            if (gravity.contains("bottom")) {
+                y = context.originY + context.height - elementHeight - bottomMargin
+            } else if (gravity.contains("verticalcenter") || (gravity.contains("center") && gravity.contains("vertical"))) {
+                y = context.originY + (context.height - elementHeight) / 2f
+            }
+
+            if (content.type == "elements" && !element.elements.isNullOrEmpty()) {
+                val childContext = LegacyLayoutContext(
+                    originX = x,
+                    originY = y,
+                    width = if (elementWidth > 0f) elementWidth else context.width - leftMargin - rightMargin,
+                    height = if (elementHeight > 0f) elementHeight else context.height - topMargin - bottomMargin,
+                    orientation = content.orientation ?: context.orientation
+                )
+                processLegacyElements(element.elements, childContext, output)
+            } else if (content.type == "space") {
+                // 空白要素はレイアウト計算にのみ使用
+            } else {
+                createRenderableElement(content, element.paint, x, y, elementWidth, elementHeight)?.let {
+                    output += it
+                }
+            }
+
+            if (context.orientation == 0) {
+                cursorX += leftMargin + elementWidth + rightMargin
+            } else {
+                cursorY += topMargin + elementHeight + bottomMargin
+            }
+        }
+    }
+
+    private fun computeElementWidth(
+        content: RawContent,
+        paint: RawPaint?,
+        children: List<RawElement>?,
+        fallbackWidth: Float
+    ): Float {
+        content.width?.takeIf { it > 0f }?.let { return it }
+        content.diameter?.takeIf { it > 0f }?.let { return it }
+
+        return when (content.type) {
+            "elements" -> {
+                val orientation = content.orientation ?: 0
+                val childWidths = children.orEmpty().map { child ->
+                    val childContent = child.content
+                    if (childContent != null) computeElementWidth(childContent, child.paint, child.elements, fallbackWidth / 2f) else 0f
+                }
+                if (orientation == 0) childWidths.sum() else childWidths.maxOrNull() ?: fallbackWidth
+            }
+            "image" -> fallbackWidth * 0.35f
+            "text" -> (paint?.textSize ?: fallbackWidth * 0.15f) * 6f
+            "shape" -> fallbackWidth * 0.1f
+            else -> fallbackWidth * 0.3f
+        }
+    }
+
+    private fun computeElementHeight(
+        content: RawContent,
+        paint: RawPaint?,
+        children: List<RawElement>?,
+        fallbackHeight: Float
+    ): Float {
+        content.height?.takeIf { it > 0f }?.let { return it }
+        content.diameter?.takeIf { it > 0f }?.let { return it }
+
+        return when (content.type) {
+            "elements" -> {
+                val orientation = content.orientation ?: 1
+                val childHeights = children.orEmpty().map { child ->
+                    val childContent = child.content
+                    if (childContent != null) computeElementHeight(childContent, child.paint, child.elements, fallbackHeight / 2f) else 0f
+                }
+                if (orientation == 0) childHeights.maxOrNull() ?: fallbackHeight else childHeights.sum()
+            }
+            "image" -> fallbackHeight * 0.3f
+            "text" -> paint?.textSize ?: fallbackHeight * 0.25f
+            "shape" -> fallbackHeight * 0.1f
+            else -> fallbackHeight * 0.2f
+        }
+    }
+
+    private fun createRenderableElement(
+        content: RawContent,
+        paint: RawPaint?,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float
+    ): LegacyRenderableElement? {
+        val type = content.type ?: return null
+        val fontWeight = when ((paint?.fontWeight ?: 400)) {
+            in 600..1000 -> "bold"
+            else -> "normal"
+        }
+        val alpha = paint?.alpha ?: paint?.lightAlpha ?: 1f
+        val primaryColor = paint?.colors?.firstOrNull() ?: paint?.lightColor ?: "#FFFFFF"
+
+        return when (type) {
+            "text" -> LegacyRenderableElement(
+                type = "text",
+                x = x,
+                y = y,
+                width = width,
+                height = height,
+                text = content.text,
+                textSource = content.textSource,
+                fontFamily = paint?.fontName ?: paint?.font,
+                fontSize = paint?.textSize,
+                fontWeight = fontWeight,
+                textAlign = null,
+                color = primaryColor,
+                alpha = alpha
+            )
+            "image" -> LegacyRenderableElement(
+                type = "image",
+                x = x,
+                y = y,
+                width = width,
+                height = height,
+                bitmap = content.bitmapResName ?: content.bitmap,
+                alpha = alpha
+            )
+            "shape" -> LegacyRenderableElement(
+                type = "shape",
+                x = x,
+                y = y,
+                width = width,
+                height = height,
+                shape = content.shape ?: "rectangle",
+                fillColor = primaryColor,
+                strokeColor = paint?.darkColor
+            )
+            else -> null
+        }
+    }
+
+    private data class RawWatermarkStyle(
+        @com.google.gson.annotations.SerializedName("styleId") val styleId: String? = null,
+        @com.google.gson.annotations.SerializedName("styleName") val styleName: String? = null,
+        @com.google.gson.annotations.SerializedName("name") val name: String? = null,
+        @com.google.gson.annotations.SerializedName("baseImageSize") val baseImageSize: Float? = null,
+        @com.google.gson.annotations.SerializedName("size") val size: RawStyleSize? = null,
+        @com.google.gson.annotations.SerializedName("imageOffset") val imageOffset: RawImageOffset? = null,
+        @com.google.gson.annotations.SerializedName("background") val background: RawBackground? = null,
+        @com.google.gson.annotations.SerializedName("bitmaps") val bitmaps: List<RawBitmap>? = null
+    )
+
+    private data class RawStyleSize(
+        @com.google.gson.annotations.SerializedName("leftMargin") val leftMargin: Float? = 0f,
+        @com.google.gson.annotations.SerializedName("topMargin") val topMargin: Float? = 0f,
+        @com.google.gson.annotations.SerializedName("rightMargin") val rightMargin: Float? = 0f,
+        @com.google.gson.annotations.SerializedName("bottomMargin") val bottomMargin: Float? = 0f
+    )
+
+    private data class RawImageOffset(
+        @com.google.gson.annotations.SerializedName("startX") val startX: Float? = 0f,
+        @com.google.gson.annotations.SerializedName("startY") val startY: Float? = 0f
+    )
+
+    private data class RawBackground(
+        @com.google.gson.annotations.SerializedName("backgroundType") val backgroundType: Int? = null,
+        @com.google.gson.annotations.SerializedName("color") val color: String? = null
+    )
+
+    private data class RawBitmap(
+        @com.google.gson.annotations.SerializedName("direction") val direction: Int? = null,
+        @com.google.gson.annotations.SerializedName("orientation") val orientation: Int? = null,
+        @com.google.gson.annotations.SerializedName("position") val position: RawPosition? = null,
+        @com.google.gson.annotations.SerializedName("width") val width: Float? = null,
+        @com.google.gson.annotations.SerializedName("height") val height: Float? = null,
+        @com.google.gson.annotations.SerializedName("elements") val elements: List<RawElement>? = null
+    )
+
+    private data class RawElement(
+        @com.google.gson.annotations.SerializedName("id") val id: Int? = null,
+        @com.google.gson.annotations.SerializedName("visible") val visible: Boolean? = true,
+        @com.google.gson.annotations.SerializedName("editable") val editable: Boolean? = false,
+        @com.google.gson.annotations.SerializedName("content") val content: RawContent? = null,
+        @com.google.gson.annotations.SerializedName("position") val position: RawPosition? = null,
+        @com.google.gson.annotations.SerializedName("paint") val paint: RawPaint? = null,
+        @com.google.gson.annotations.SerializedName("elements") val elements: List<RawElement>? = null,
+        @com.google.gson.annotations.SerializedName("layoutWeight") val layoutWeight: Float? = null,
+        @com.google.gson.annotations.SerializedName("spaceUse") val spaceUse: String? = null
+    )
+
+    private data class RawContent(
+        @com.google.gson.annotations.SerializedName("type") val type: String? = null,
+        @com.google.gson.annotations.SerializedName("orientation") val orientation: Int? = null,
+        @com.google.gson.annotations.SerializedName("width") val width: Float? = null,
+        @com.google.gson.annotations.SerializedName("height") val height: Float? = null,
+        @com.google.gson.annotations.SerializedName("bitmap") val bitmap: String? = null,
+        @com.google.gson.annotations.SerializedName("bitmapResName") val bitmapResName: String? = null,
+        @com.google.gson.annotations.SerializedName("scaleType") val scaleType: Int? = null,
+        @com.google.gson.annotations.SerializedName("text") val text: String? = null,
+        @com.google.gson.annotations.SerializedName("textSource") val textSource: Int? = null,
+        @com.google.gson.annotations.SerializedName("shape") val shape: String? = null,
+        @com.google.gson.annotations.SerializedName("diameter") val diameter: Float? = null,
+        @com.google.gson.annotations.SerializedName("modelSuffix") val modelSuffix: String? = null,
+        @com.google.gson.annotations.SerializedName("isExtendModel") val isExtendModel: Boolean? = null
+    )
+
+    private data class RawPosition(
+        @com.google.gson.annotations.SerializedName("layoutGravity") val layoutGravity: String? = null,
+        @com.google.gson.annotations.SerializedName("layoutGravityEnable") val layoutGravityEnable: Boolean? = null,
+        @com.google.gson.annotations.SerializedName("leftMargin") val leftMargin: Float? = 0f,
+        @com.google.gson.annotations.SerializedName("topMargin") val topMargin: Float? = 0f,
+        @com.google.gson.annotations.SerializedName("rightMargin") val rightMargin: Float? = 0f,
+        @com.google.gson.annotations.SerializedName("bottomMargin") val bottomMargin: Float? = 0f
+    )
+
+    private data class RawPaint(
+        @com.google.gson.annotations.SerializedName("fontType") val fontType: Int? = null,
+        @com.google.gson.annotations.SerializedName("fontName") val fontName: String? = null,
+        @com.google.gson.annotations.SerializedName("font") val font: String? = null,
+        @com.google.gson.annotations.SerializedName("fontFileType") val fontFileType: Int? = null,
+        @com.google.gson.annotations.SerializedName("fontWeight") val fontWeight: Int? = null,
+        @com.google.gson.annotations.SerializedName("textSize") val textSize: Float? = null,
+        @com.google.gson.annotations.SerializedName("letterSpacing") val letterSpacing: Float? = null,
+        @com.google.gson.annotations.SerializedName("lineHeight") val lineHeight: Float? = null,
+        @com.google.gson.annotations.SerializedName("alpha") val alpha: Float? = null,
+        @com.google.gson.annotations.SerializedName("lightAlpha") val lightAlpha: Float? = null,
+        @com.google.gson.annotations.SerializedName("gradientType") val gradientType: Int? = null,
+        @com.google.gson.annotations.SerializedName("colors") val colors: List<String>? = null,
+        @com.google.gson.annotations.SerializedName("lightColor") val lightColor: String? = null,
+        @com.google.gson.annotations.SerializedName("darkColor") val darkColor: String? = null,
+        @com.google.gson.annotations.SerializedName("colorPositions") val colorPositions: List<Float>? = null
+    )
+
+    private data class LegacyLayoutContext(
+        val originX: Float,
+        val originY: Float,
+        val width: Float,
+        val height: Float,
+        val orientation: Int
+    )
+
+    private data class LegacyRenderableElement(
+        val type: String,
+        val x: Float,
+        val y: Float,
+        val width: Float,
+        val height: Float,
+        val text: String? = null,
+        val textSource: Int? = null,
+        val fontFamily: String? = null,
+        val fontSize: Float? = null,
+        val fontWeight: String? = null,
+        val textAlign: String? = null,
+        val color: String? = null,
+        val alpha: Float? = null,
+        val bitmap: String? = null,
+        val shape: String? = null,
+        val fillColor: String? = null,
+        val strokeColor: String? = null,
+        val strokeWidth: Float? = null,
+        val cornerRadius: Float? = null,
+        val rotation: Float? = null
+    ) {
+        fun toWatermarkElement(normalizedX: Float, normalizedY: Float): com.oneplus.exifpatcher.watermark.model.WatermarkElement {
+            return com.oneplus.exifpatcher.watermark.model.WatermarkElement(
+                type = type,
+                x = normalizedX,
+                y = normalizedY,
+                width = width,
+                height = height,
+                text = text,
+                textSource = textSource,
+                fontFamily = fontFamily,
+                fontSize = fontSize,
+                fontWeight = fontWeight,
+                textAlign = textAlign,
+                color = color,
+                alpha = alpha,
+                bitmap = bitmap,
+                shape = shape,
+                fillColor = fillColor,
+                strokeColor = strokeColor,
+                strokeWidth = strokeWidth,
+                cornerRadius = cornerRadius,
+                rotation = rotation
+            )
+        }
+    }
+
+    private fun RawStyleSize.totalHorizontalMargin(): Float {
+        return (leftMargin ?: 0f) + (rightMargin ?: 0f)
+    }
+
     
     /**
      * プリセットスタイルID - 全42種類
