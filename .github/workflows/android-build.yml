@@ -59,12 +59,12 @@ jobs:
       env:
         KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
       run: |
-        echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
+        echo "$KEYSTORE_BASE64" | base64 -d > app/release.keystore
         
     - name: Build Release APK
       if: steps.check-secrets.outputs.has_keystore == 'true'
       env:
-        KEYSTORE_FILE: release.keystore
+        KEYSTORE_FILE: app/release.keystore
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
