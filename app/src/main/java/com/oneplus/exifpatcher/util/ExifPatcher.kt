@@ -1,9 +1,28 @@
-package com.oneplus.exifpatcher.util
-
-import android.content.Context
+package com.oneplus.exi    /**
+     * Process an image by applying OnePlus EXIF patches
+     * 
+     * @param context Application context
+     * @param sourceUri URI of the source image
+     * @param destinationFile DocumentFile where the patched image will be saved
+     * @param fileName Name for the destination file
+     * @param customModelName Optional custom model name to set (null to preserve original)
+     * @param watermarkStyleId Optional watermark style ID to apply (null for no watermark)
+     * @return True if successful, false otherwise
+     */
+    fun patchImage(
+        context: Context,
+        sourceUri: Uri,
+        destinationFile: DocumentFile,
+        fileName: String,
+        customModelName: String? = null,
+        watermarkStyleId: String? = null
+    ): Boolean {import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.exifinterface.media.ExifInterface
+import com.oneplus.exifpatcher.watermark.HasselbladWatermarkManager
 import java.io.File
 import java.io.FileOutputStream
 
@@ -103,15 +122,66 @@ object ExifPatcher {
             // Save the modified EXIF data
             exif.saveAttributes()
             
+            // Apply watermark if specified
+            val finalFile = if (watermarkStyleId != null) {
+                try {
+                    // Load the image with EXIF data
+                    val bitmap = BitmapFactory.decodeFile(tempFile.absolutePath)
+                    
+                    // Apply watermark
+                    val watermarkManager = HasselbladWatermarkManager(context)
+                    val watermarkedBitmap = watermarkManager.addWatermark(
+                        source = bitmap,
+                        styleId = watermarkStyleId,
+                        exifInterface = exif
+                    )
+                    
+                    // Save watermarked image to a new temp file
+                    val watermarkedFile = File(context.cacheDir, "watermarked_${System.currentTimeMillis()}.jpg")
+                    FileOutputStream(watermarkedFile).use { fos ->
+                        watermarkedBitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
+                    }
+                    
+                    // Update EXIF on watermarked file
+                    val watermarkedExif = ExifInterface(watermarkedFile.absolutePath)
+                    exif.getAttribute(ExifInterface.TAG_MAKE)?.let { 
+                        watermarkedExif.setAttribute(ExifInterface.TAG_MAKE, it) 
+                    }
+                    exif.getAttribute(ExifInterface.TAG_MODEL)?.let { 
+                        watermarkedExif.setAttribute(ExifInterface.TAG_MODEL, it) 
+                    }
+                    exif.getAttribute(ExifInterface.TAG_USER_COMMENT)?.let { 
+                        watermarkedExif.setAttribute(ExifInterface.TAG_USER_COMMENT, it) 
+                    }
+                    exif.getAttribute(ExifInterface.TAG_XMP)?.let { 
+                        watermarkedExif.setAttribute(ExifInterface.TAG_XMP, it) 
+                    }
+                    watermarkedExif.saveAttributes()
+                    
+                    // Clean up original temp file
+                    tempFile.delete()
+                    bitmap.recycle()
+                    watermarkedBitmap.recycle()
+                    
+                    watermarkedFile
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    // If watermarking fails, use original temp file
+                    tempFile
+                }
+            } else {
+                tempFile
+            }
+            
             // Copy the patched file to the destination
             context.contentResolver.openOutputStream(newFile.uri)?.use { outputStream ->
-                tempFile.inputStream().use { inputStream ->
+                finalFile.inputStream().use { inputStream ->
                     inputStream.copyTo(outputStream)
                 }
             }
             
             // Clean up temp file
-            tempFile.delete()
+            finalFile.delete()
             
             true
         } catch (e: Exception) {
@@ -127,6 +197,7 @@ object ExifPatcher {
      * @param sourceUris List of source image URIs
      * @param destinationDir Destination directory (as DocumentFile) for patched images
      * @param customModelName Optional custom model name to set (null to preserve original)
+     * @param watermarkStyleId Optional watermark style ID to apply (null for no watermark)
      * @param onProgress Callback for progress updates (current index, total count)
      * @return Number of successfully processed images
      */
@@ -135,6 +206,7 @@ object ExifPatcher {
         sourceUris: List<Uri>,
         destinationDir: DocumentFile,
         customModelName: String? = null,
+        watermarkStyleId: String? = null,
         onProgress: (Int, Int) -> Unit
     ): Int {
         var successCount = 0
@@ -145,7 +217,7 @@ object ExifPatcher {
             // Generate unique filename
             val fileName = "patched_${System.currentTimeMillis()}_$index.jpg"
             
-            if (patchImage(context, uri, destinationDir, fileName, customModelName)) {
+            if (patchImage(context, uri, destinationDir, fileName, customModelName, watermarkStyleId)) {
                 successCount++
             }
         }

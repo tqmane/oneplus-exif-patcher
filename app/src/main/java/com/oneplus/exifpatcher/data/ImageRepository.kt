@@ -18,6 +18,7 @@ class ImageRepository(private val context: Context) {
      * @param imageUris List of image URIs to process
      * @param destinationUri URI of the destination directory
      * @param customModelName Optional custom model name to set (null to preserve original)
+     * @param watermarkStyleId Optional watermark style ID to apply (null for no watermark)
      * @param onProgress Callback for progress updates
      * @return Result containing success count or error
      */
@@ -25,6 +26,7 @@ class ImageRepository(private val context: Context) {
         imageUris: List<Uri>,
         destinationUri: Uri,
         customModelName: String? = null,
+        watermarkStyleId: String? = null,
         onProgress: (Int, Int) -> Unit
     ): Result<Int> = withContext(Dispatchers.IO) {
         try {
@@ -42,6 +44,7 @@ class ImageRepository(private val context: Context) {
                 sourceUris = imageUris,
                 destinationDir = destinationDir,
                 customModelName = customModelName,
+                watermarkStyleId = watermarkStyleId,
                 onProgress = onProgress
             )
             
