@@ -65,8 +65,25 @@ class PresetRepository(context: Context) {
             .apply()
     }
     
+    /**
+     * Save last used destination URI
+     */
+    fun saveLastDestinationUri(uriString: String) {
+        prefs.edit()
+            .putString(LAST_DESTINATION_KEY, uriString)
+            .apply()
+    }
+    
+    /**
+     * Get last used destination URI
+     */
+    fun getLastDestinationUri(): String? {
+        return prefs.getString(LAST_DESTINATION_KEY, null)
+    }
+    
     companion object {
         private const val PRESETS_KEY = "model_presets"
+        private const val LAST_DESTINATION_KEY = "last_destination_uri"
         private const val DELIMITER = "|||"
     }
 }

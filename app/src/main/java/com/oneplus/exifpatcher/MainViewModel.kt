@@ -33,6 +33,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     
     private val repository = ImageRepository(application)
     private val presetRepository = PresetRepository(application)
+    private val context = application.applicationContext
     
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -42,6 +43,35 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             presetRepository.presets.collect { presets ->
                 _uiState.update { it.copy(modelPresets = presets) }
+            }
+        }
+        
+        // Load last used destination URI
+        loadLastDestinationUri()
+    }
+    
+    /**
+     * Load last used destination URI from preferences
+     */
+    private fun loadLastDestinationUri() {
+        val lastUriString = presetRepository.getLastDestinationUri()
+        if (lastUriString != null) {
+            try {
+                val uri = Uri.parse(lastUriString)
+                // Try to take persistable permission if not already taken
+                try {
+                    context.contentResolver.takePersistableUriPermission(
+                        uri,
+                        android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or 
+                        android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    )
+                } catch (e: SecurityException) {
+                    // Permission already exists or not available, continue anyway
+                }
+                _uiState.update { it.copy(destinationUri = uri) }
+            } catch (e: Exception) {
+                // Invalid URI, ignore
+                e.printStackTrace()
             }
         }
     }
@@ -58,6 +88,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun setDestinationUri(uri: Uri?) {
         _uiState.update { it.copy(destinationUri = uri, errorMessage = null) }
+        // Save to preferences
+        uri?.let {
+            presetRepository.saveLastDestinationUri(it.toString())
+        }
     }
     
     /**
