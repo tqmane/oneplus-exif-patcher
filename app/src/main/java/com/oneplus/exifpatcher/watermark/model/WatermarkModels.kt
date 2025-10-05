@@ -1,6 +1,7 @@
 package com.oneplus.exifpatcher.watermark.model
 
 import com.google.gson.annotations.SerializedName
+import java.util.Locale
 
 /**
  * Hasselbladウォーターマークのスタイル定義
@@ -132,11 +133,19 @@ data class CameraInfo(
      */
     fun format(): String {
         val parts = mutableListOf<String>()
-        aperture?.let { parts.add(it) }
-        shutterSpeed?.let { parts.add("${it}s") }
-        iso?.let { parts.add(it) }
-        focalLength?.let { parts.add(it) }
+
+        focalLength?.trim()?.takeIf { it.isNotEmpty() }?.let { parts.add(it) }
+        aperture?.trim()?.takeIf { it.isNotEmpty() }?.let { parts.add(it) }
+        shutterSpeed?.trim()?.takeIf { it.isNotEmpty() }?.let { raw ->
+            val normalized = raw.trimEnd { it == 's' || it == 'S' }
+            parts.add("${normalized}s")
+        }
+        iso?.trim()?.takeIf { it.isNotEmpty() }?.let { raw ->
+            val upper = raw.replace(" ", "").uppercase(Locale.getDefault())
+            val formatted = if (upper.startsWith("ISO")) upper else "ISO$upper"
+            parts.add(formatted)
+        }
         
-        return parts.joinToString("  ")
+        return parts.joinToString(" ")
     }
 }
