@@ -7,20 +7,20 @@ import com.google.gson.annotations.SerializedName
  */
 data class WatermarkStyle(
     @SerializedName("id")
-    val id: String,
-    
+    val id: String = "",
+
     @SerializedName("name")
-    val name: String,
-    
+    val name: String = "",
+
     @SerializedName("elements")
-    val elements: List<WatermarkElement>,
-    
+    val elements: List<WatermarkElement> = emptyList(),
+
     @SerializedName("width")
-    val width: Float,
-    
+    val width: Float = 0f,
+
     @SerializedName("height")
-    val height: Float,
-    
+    val height: Float = 0f,
+
     @SerializedName("orientation")
     val orientation: Int = 0  // 0=横, 1=縦
 )

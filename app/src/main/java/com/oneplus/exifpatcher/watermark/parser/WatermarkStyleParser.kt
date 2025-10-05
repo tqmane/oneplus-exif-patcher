@@ -22,9 +22,23 @@ class WatermarkStyleParser(private val context: Context) {
         return try {
             context.assets.open("watermark/$fileName").use { inputStream ->
                 val json = inputStream.bufferedReader().use { it.readText() }
-                parseModernStyle(json)
-                    ?: parseLegacyStyle(json, fileName.removeSuffix(".json"))
-                    ?: createDefaultStyle()
+                val fallbackId = fileName.removeSuffix(".json")
+
+                val modernStyle = parseModernStyle(json)
+                    ?.let { normalizeStyle(it, fallbackId) }
+                if (modernStyle != null && modernStyle.elements.isNotEmpty()) {
+                    return modernStyle
+                }
+
+                val legacyStyle = parseLegacyStyle(json, fallbackId)
+                if (legacyStyle != null && legacyStyle.elements.isNotEmpty()) {
+                    return normalizeStyle(legacyStyle, fallbackId)
+                }
+
+                createDefaultStyle().copy(
+                    id = fallbackId,
+                    name = fallbackId.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                )
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -131,6 +145,49 @@ class WatermarkStyleParser(private val context: Context) {
             height = styleHeight,
             orientation = bitmaps.firstOrNull()?.orientation ?: 0,
             elements = normalizedElements
+        )
+    }
+
+    private fun normalizeStyle(style: WatermarkStyle, fallbackId: String): WatermarkStyle {
+        val safeElements = style.elements.filter { it.type.isNotBlank() }
+        if (safeElements.isEmpty()) {
+            return style.copy(id = style.id.ifBlank { fallbackId }, name = style.name.ifBlank { fallbackId })
+        }
+
+        val minX = safeElements.minOf { it.x }
+        val minY = safeElements.minOf { it.y }
+        val maxX = safeElements.maxOf { it.x + it.width }
+        val maxY = safeElements.maxOf { it.y + it.height }
+
+        val normalizedElements = if (minX < 0f || minY < 0f) {
+            safeElements.map { element ->
+                element.copy(
+                    x = element.x - minX,
+                    y = element.y - minY
+                )
+            }
+        } else {
+            safeElements
+        }
+
+        val resolvedWidth = when {
+            style.width > 0f -> style.width
+            maxX > minX -> maxX - minX
+            else -> safeElements.maxOf { it.width }.coerceAtLeast(1f)
+        }
+
+        val resolvedHeight = when {
+            style.height > 0f -> style.height
+            maxY > minY -> maxY - minY
+            else -> safeElements.maxOf { it.height }.coerceAtLeast(1f)
+        }
+
+        return style.copy(
+            id = style.id.ifBlank { fallbackId },
+            name = style.name.ifBlank { fallbackId },
+            elements = normalizedElements,
+            width = resolvedWidth,
+            height = resolvedHeight
         )
     }
 

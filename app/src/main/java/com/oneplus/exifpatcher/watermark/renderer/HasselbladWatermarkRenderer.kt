@@ -68,6 +68,9 @@ class HasselbladWatermarkRenderer(private val context: Context) {
         
         // スケール計算（スタイル定義は固定サイズなので画像サイズに合わせる）
         val scale = calculateScale(resultBitmap.width, resultBitmap.height, style)
+        if (scale <= 0f) {
+            return resultBitmap
+        }
         val (originX, originY) = calculateOrigin(resultBitmap.width, resultBitmap.height, style, scale)
         
         // 各要素を描画
@@ -88,8 +91,13 @@ class HasselbladWatermarkRenderer(private val context: Context) {
     private fun calculateScale(imageWidth: Int, imageHeight: Int, style: WatermarkStyle): Float {
         // 画像の短辺を基準にスケールを計算
         val baseSize = minOf(imageWidth, imageHeight)
-        val styleBaseSize = if (style.orientation == 0) style.height else style.width
-        
+        val (styleWidth, styleHeight) = resolveStyleSize(style)
+        val styleBaseSize = if (style.orientation == 0) styleHeight else styleWidth
+
+        if (styleBaseSize <= 0f) {
+            return 0f
+        }
+
         // ウォーターマークサイズは画像の10%程度に調整
         return (baseSize * 0.1f) / styleBaseSize
     }
@@ -100,8 +108,9 @@ class HasselbladWatermarkRenderer(private val context: Context) {
         style: WatermarkStyle,
         scale: Float
     ): Pair<Float, Float> {
-        val watermarkWidth = style.width * scale
-        val watermarkHeight = style.height * scale
+        val (styleWidth, styleHeight) = resolveStyleSize(style)
+        val watermarkWidth = styleWidth * scale
+        val watermarkHeight = styleHeight * scale
         val margin = minOf(imageWidth, imageHeight) * 0.04f
 
         val clampedWidth = watermarkWidth.coerceAtMost(imageWidth - margin * 2f)
@@ -116,6 +125,31 @@ class HasselbladWatermarkRenderer(private val context: Context) {
             .coerceIn(margin, imageHeight - margin - clampedHeight)
 
         return originX to originY
+    }
+
+    private fun resolveStyleSize(style: WatermarkStyle): Pair<Float, Float> {
+        if (style.width > 0f && style.height > 0f) {
+            return style.width to style.height
+        }
+
+        val maxX = style.elements.maxOfOrNull { it.x + it.width } ?: style.width
+        val minX = style.elements.minOfOrNull { it.x } ?: 0f
+        val maxY = style.elements.maxOfOrNull { it.y + it.height } ?: style.height
+        val minY = style.elements.minOfOrNull { it.y } ?: 0f
+
+        val resolvedWidth = when {
+            style.width > 0f -> style.width
+            maxX > minX -> maxX - minX
+            else -> style.elements.maxOfOrNull { it.width } ?: style.width
+        }.coerceAtLeast(1f)
+
+        val resolvedHeight = when {
+            style.height > 0f -> style.height
+            maxY > minY -> maxY - minY
+            else -> style.elements.maxOfOrNull { it.height } ?: style.height
+        }.coerceAtLeast(1f)
+
+        return resolvedWidth to resolvedHeight
     }
     
     /**

@@ -4,7 +4,7 @@
 - OxygenOS ギャラリー APK から抽出した `watermark_master_styles/*.json` を既存のパーサーで解釈できるように整理しました。
 - フォント／アイコンなど外部リソースを `app/src/main/assets` および `res/drawable-nodpi` に取り込み、JSON の `bitmap` / `fontName` 参照が解決されるようマッピングしています（Avenir Next / Butler / FZYaSong の正式フォントを同梱）。
 - `HasselbladWatermarkRenderer` にフォント別名テーブルとアセット検出ロジックを実装し、OEM フォント名をアプリに同梱したフォントでフォールバックできるようにしました。
-- 水平・縦向き双方のスタイル定義で既存の `WatermarkStyle` モデルへ落とし込み済み。`WatermarkStyleParser` 側の変更は不要でした。
+- 水平・縦向き双方のスタイル定義で既存の `WatermarkStyle` モデルへ落とし込み済み。`WatermarkStyleParser` は不足プロパティの補完・正規化を行うよう更新済みです。
 
 ## 取り込んだリソース
 ### フォント
@@ -39,6 +39,7 @@
 - `systemFontAliasMap` 経由で `OplusSans` などは Android システムフォントにフォールバック。
 - `Typeface` のキャッシュキーを正規化済み文字列＋スタイルで構成し、描画コストを削減。
 - `calculateOrigin` で描画開始位置を算出し、透かし全体を画像下部に 4% マージンを空けて配置するよう調整。
+- `WatermarkStyleParser` は `loadStyleFromAssets` 時にスタイル ID/幅/高さ/要素を検証し、欠損している場合はレガシー JSON 変換やバウンディングボックスから補完するため、透かしが空描画になるケースを防止。
 
 ### パーサー／モデル
 - `WatermarkStyleParser` のレガシー JSON 変換でテキスト要素の `fontFamily` がそのまま保持されるため、レンダラー側で alias を解決するだけで十分でした。
