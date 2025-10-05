@@ -8,14 +8,46 @@ import com.oneplus.exifpatcher.watermark.model.CameraInfo
 import com.oneplus.exifpatcher.watermark.model.TextSource
 import com.oneplus.exifpatcher.watermark.model.WatermarkElement
 import com.oneplus.exifpatcher.watermark.model.WatermarkStyle
+import java.util.Locale
 
 /**
  * Hasselbladウォーターマークを画像に描画するレンダラー
  */
 class HasselbladWatermarkRenderer(private val context: Context) {
-    
+
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val fontCache = mutableMapOf<String, Typeface>()
+    private data class FontAsset(val normal: String, val bold: String? = null) {
+        fun pathFor(style: Int): String = if (style == Typeface.BOLD) bold ?: normal else normal
+    }
+
+    private val fontAliasMap = mapOf(
+        "avenirnext" to FontAsset("fonts/AvenirNext.ttc"),
+        "avenirnext.ttc" to FontAsset("fonts/AvenirNext.ttc"),
+        "avenirnext.zip" to FontAsset("fonts/AvenirNext.ttc"),
+        "fonts/avenirnext.ttc" to FontAsset("fonts/AvenirNext.ttc"),
+        "fonts/avenirnext.zip" to FontAsset("fonts/AvenirNext.ttc"),
+        "avenextmedium.ttc" to FontAsset("fonts/AvenirNext.ttc"),
+        "avenextmedium" to FontAsset("fonts/AvenirNext.ttc"),
+        "butler" to FontAsset("fonts/ButlerMedium.otf", bold = "fonts/ButlerBold.otf"),
+        "butler.zip" to FontAsset("fonts/ButlerMedium.otf", bold = "fonts/ButlerBold.otf"),
+        "fonts/butler.zip" to FontAsset("fonts/ButlerMedium.otf", bold = "fonts/ButlerBold.otf"),
+        "butlerbold" to FontAsset("fonts/ButlerBold.otf"),
+        "bulterbold" to FontAsset("fonts/ButlerBold.otf"),
+        "butlermedium" to FontAsset("fonts/ButlerMedium.otf"),
+        "fzyasongdb1gbk" to FontAsset("fonts/FZCYSK.TTF"),
+        "fzyasongdb1gbk.zip" to FontAsset("fonts/FZCYSK.TTF"),
+        "fonts/fzyasongdb1gbk.zip" to FontAsset("fonts/FZCYSK.TTF"),
+        "fzcysk" to FontAsset("fonts/FZCYSK.TTF"),
+        "radomirtinkovgilroy-medium" to FontAsset("fonts/RadomirTinkovGilroy-Medium.otf"),
+        "radomirtinkovgilroymedium" to FontAsset("fonts/RadomirTinkovGilroy-Medium.otf"),
+        "radomirtinkovgilroy-medium.otf" to FontAsset("fonts/RadomirTinkovGilroy-Medium.otf"),
+        "fonts/radomirtinkovgilroy-medium.otf" to FontAsset("fonts/RadomirTinkovGilroy-Medium.otf"),
+        "gilroy" to FontAsset("fonts/RadomirTinkovGilroy-Medium.otf")
+    )
+    private val systemFontAliasMap = mapOf(
+        "oplussans" to "sans-serif-medium"
+    )
     
     /**
      * 画像にウォーターマークを描画
@@ -218,37 +250,104 @@ class HasselbladWatermarkRenderer(private val context: Context) {
      * フォントを読み込み
      */
     private fun loadFont(fontFamily: String?, fontWeight: String?): Typeface {
-        val cacheKey = "${fontFamily}_$fontWeight"
-        
+        val trimmedFamily = fontFamily?.trim()
+        val normalizedFamily = trimmedFamily?.lowercase(Locale.ROOT)
+        val style = parseTypefaceStyle(fontWeight)
+        val cacheKey = "${normalizedFamily}_$style"
+
         return fontCache.getOrPut(cacheKey) {
-            try {
-                // assetsフォルダからカスタムフォントを読み込み
-                when (fontFamily?.lowercase()) {
-                    "aveNextMedium.ttc" -> "fonts/AvenirNext.ttc"
-                    "butlerbold.otf" -> "fonts/ButlerBold.otf"
-                    "butlermedium.otf" -> "fonts/ButlerMedium.otf"
-                    "fzcysk.ttf" -> "fonts/FZCYSK.TTF"
-                    else -> null
-                }?.let { fontPath ->
-                    Typeface.createFromAsset(context.assets, fontPath)
-                } ?: getSystemTypeface(fontWeight)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                getSystemTypeface(fontWeight)
+            resolveTypefaceFromAssets(trimmedFamily, normalizedFamily, style)?.let { return@getOrPut it }
+            resolveSystemTypeface(normalizedFamily, style)?.let { return@getOrPut it }
+
+            if (fontFamily != null && fontFamily.startsWith("/")) {
+                runCatching { Typeface.createFromFile(fontFamily) }.getOrNull()?.let { return@getOrPut it }
             }
+
+            getSystemTypeface(style)
         }
     }
-    
+
+    private fun resolveTypefaceFromAssets(
+        rawFamily: String?,
+        normalizedFamily: String?,
+        style: Int
+    ): Typeface? {
+        rawFamily?.takeIf { assetExists(it) }?.let {
+            return runCatching { Typeface.createFromAsset(context.assets, it) }.getOrNull()
+        }
+
+        val sanitized = normalizedFamily
+            ?.replace(" ", "")
+            ?.removePrefix("fonts/")
+            ?.removeSuffix(".zip")
+
+        val aliasCandidates = mutableListOf<String?>()
+        aliasCandidates += normalizedFamily
+        aliasCandidates += sanitized
+        sanitized?.let { alias ->
+            aliasCandidates += "fonts/$alias"
+            if (!alias.endsWith(".ttf") && !alias.endsWith(".otf") && !alias.endsWith(".ttc")) {
+                aliasCandidates += "$alias.ttf"
+                aliasCandidates += "$alias.otf"
+                aliasCandidates += "$alias.ttc"
+                aliasCandidates += "fonts/$alias.ttf"
+                aliasCandidates += "fonts/$alias.otf"
+                aliasCandidates += "fonts/$alias.ttc"
+            }
+        }
+
+        var assetPath: String? = null
+        for (candidate in aliasCandidates) {
+            val path = candidate?.let { fontAliasMap[it]?.pathFor(style) }
+            if (path != null) {
+                assetPath = path
+                break
+            }
+        }
+
+        return assetPath?.takeIf { assetExists(it) }?.let {
+            runCatching { Typeface.createFromAsset(context.assets, it) }.getOrNull()
+        }
+    }
+
+    private fun resolveSystemTypeface(normalizedFamily: String?, style: Int): Typeface? {
+        val alias = normalizedFamily?.replace(" ", "") ?: return null
+
+        systemFontAliasMap[alias]?.let { familyName ->
+            return Typeface.create(familyName, style)
+        }
+
+        return null
+    }
+
     /**
      * システムフォントを取得
      */
-    private fun getSystemTypeface(fontWeight: String?): Typeface {
-        return when (fontWeight?.lowercase()) {
-            "bold" -> Typeface.DEFAULT_BOLD
-            else -> Typeface.DEFAULT
-        }
+    private fun getSystemTypeface(style: Int): Typeface {
+        return Typeface.create(Typeface.DEFAULT, style)
     }
-    
+
+    private fun parseTypefaceStyle(fontWeight: String?): Int {
+        if (fontWeight.isNullOrBlank()) return Typeface.NORMAL
+
+        val normalized = fontWeight.lowercase(Locale.ROOT)
+        if (normalized == "bold") return Typeface.BOLD
+
+        val weightValue = normalized.toIntOrNull()
+        if (weightValue != null) {
+            return if (weightValue >= 600) Typeface.BOLD else Typeface.NORMAL
+        }
+
+        return Typeface.NORMAL
+    }
+
+    private fun assetExists(path: String): Boolean {
+        if (path.isBlank()) return false
+        return runCatching {
+            context.assets.open(path).use { }
+        }.isSuccess
+    }
+
     /**
      * 画像リソースを読み込み
      */
