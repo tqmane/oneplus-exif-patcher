@@ -23,6 +23,9 @@ android {
         }
     }
 
+    // Signing temporarily disabled for testing
+    // TODO: Re-enable when keystore is properly configured
+    /*
     signingConfigs {
         create("release") {
             // For GitHub Actions, use environment variables
@@ -45,6 +48,7 @@ android {
             }
         }
     }
+    */
 
     buildTypes {
         debug {
@@ -60,11 +64,13 @@ android {
                 "proguard-rules.pro"
             )
             
+            // Signing temporarily disabled for testing
+            // TODO: Re-enable when keystore is properly configured
             // Only sign if keystore is configured
-            val keystorePropertiesFile = rootProject.file("keystore.properties")
-            if (keystorePropertiesFile.exists() || System.getenv("KEYSTORE_PASSWORD") != null) {
-                signingConfig = signingConfigs.getByName("release")
-            }
+            // val keystorePropertiesFile = rootProject.file("keystore.properties")
+            // if (keystorePropertiesFile.exists() || System.getenv("KEYSTORE_PASSWORD") != null) {
+            //     signingConfig = signingConfigs.getByName("release")
+            // }
         }
     }
     compileOptions {

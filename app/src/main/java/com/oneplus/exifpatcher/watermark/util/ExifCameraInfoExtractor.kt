@@ -71,8 +71,9 @@ object ExifCameraInfoExtractor {
      * @return 例: "ISO400"
      */
     private fun extractIso(exif: ExifInterface): String? {
-        val iso = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS)?.toIntOrNull()
-            ?: exif.getAttribute(ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY)?.toIntOrNull()
+        // Use TAG_PHOTOGRAPHIC_SENSITIVITY (recommended) instead of deprecated TAG_ISO_SPEED_RATINGS
+        val iso = exif.getAttribute(ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY)?.toIntOrNull()
+            ?: exif.getAttributeInt(ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY, 0).takeIf { it > 0 }
         
         return iso?.let { "ISO$it" }
     }

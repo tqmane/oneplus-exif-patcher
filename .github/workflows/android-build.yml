@@ -35,45 +35,48 @@ jobs:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
         retention-days: 30
-        
-    - name: Check if keystore secret exists
-      id: check-secrets
-      env:
-        KEYSTORE_SECRET: ${{ secrets.KEYSTORE_BASE64 }}
-      run: |
-        if [ -n "$KEYSTORE_SECRET" ]; then
-          echo "has_keystore=true" >> $GITHUB_OUTPUT
-          echo "✅ Keystore configured. Will build release APK."
-        else
-          echo "has_keystore=false" >> $GITHUB_OUTPUT
-          echo "⚠️ Keystore not configured. Skipping release build."
-          echo "ℹ️ To build release APK, configure the following secrets:"
-          echo "   - KEYSTORE_BASE64"
-          echo "   - KEYSTORE_PASSWORD"
-          echo "   - KEY_ALIAS"
-          echo "   - KEY_PASSWORD"
-        fi
-        
-    - name: Decode Keystore
-      if: steps.check-secrets.outputs.has_keystore == 'true'
-      env:
-        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-      run: |
-        echo "$KEYSTORE_BASE64" | base64 -d > app/release.keystore
-        
-    - name: Build Release APK
-      if: steps.check-secrets.outputs.has_keystore == 'true'
-      env:
-        KEYSTORE_FILE: app/release.keystore
-        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-      run: ./gradlew assembleRelease --no-daemon
-      
-    - name: Upload Release APK
-      if: steps.check-secrets.outputs.has_keystore == 'true' && success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-release
-        path: app/build/outputs/apk/release/app-release.apk
-        retention-days: 90
+    
+    # Release build temporarily disabled - signing configuration commented out
+    # TODO: Re-enable when keystore is properly configured
+    #    
+    # - name: Check if keystore secret exists
+    #   id: check-secrets
+    #   env:
+    #     KEYSTORE_SECRET: ${{ secrets.KEYSTORE_BASE64 }}
+    #   run: |
+    #     if [ -n "$KEYSTORE_SECRET" ]; then
+    #       echo "has_keystore=true" >> $GITHUB_OUTPUT
+    #       echo "✅ Keystore configured. Will build release APK."
+    #     else
+    #       echo "has_keystore=false" >> $GITHUB_OUTPUT
+    #       echo "⚠️ Keystore not configured. Skipping release build."
+    #       echo "ℹ️ To build release APK, configure the following secrets:"
+    #       echo "   - KEYSTORE_BASE64"
+    #       echo "   - KEYSTORE_PASSWORD"
+    #       echo "   - KEY_ALIAS"
+    #       echo "   - KEY_PASSWORD"
+    #     fi
+    #     
+    # - name: Decode Keystore
+    #   if: steps.check-secrets.outputs.has_keystore == 'true'
+    #   env:
+    #     KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+    #   run: |
+    #     echo "$KEYSTORE_BASE64" | base64 -d > app/release.keystore
+    #     
+    # - name: Build Release APK
+    #   if: steps.check-secrets.outputs.has_keystore == 'true'
+    #   env:
+    #     KEYSTORE_FILE: app/release.keystore
+    #     KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+    #     KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+    #     KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+    #   run: ./gradlew assembleRelease --no-daemon
+    #   
+    # - name: Upload Release APK
+    #   if: steps.check-secrets.outputs.has_keystore == 'true' && success()
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: app-release
+    #     path: app/build/outputs/apk/release/app-release.apk
+    #     retention-days: 90
