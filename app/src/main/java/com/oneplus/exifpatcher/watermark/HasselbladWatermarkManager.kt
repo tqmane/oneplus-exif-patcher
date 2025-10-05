@@ -89,15 +89,80 @@ class HasselbladWatermarkManager(private val context: Context) {
     }
     
     /**
-     * プリセットスタイルID
+     * プリセットスタイルID - WatermarkStyleParser.PresetStylesを参照
      */
     object Presets {
-        const val LANDSCAPE = "style_042_hasselblad_landscape_v2"
-        const val LANDSCAPE_RIGHT = "style_043_hasselblad_landscape_right_v2"
-        const val VERTICAL_TOP = "style_044_hasselblad_vertical_top_v2"
-        const val VERTICAL_BOTTOM = "style_045_hasselblad_vertical_bottom_v2"
-        const val VERTICAL_CENTER = "style_046_hasselblad_vertical_center_v2"
-        const val HORIZONTAL_TOP = "style_047_hasselblad_horizontal_top_v2"
+        // Hasselblad スタイル
+        const val HASSEL_STYLE_1 = WatermarkStyleParser.PresetStyles.HASSEL_STYLE_1
+        const val HASSEL_STYLE_2 = WatermarkStyleParser.PresetStyles.HASSEL_STYLE_2
+        const val HASSEL_STYLE_3 = WatermarkStyleParser.PresetStyles.HASSEL_STYLE_3
+        const val HASSEL_STYLE_4 = WatermarkStyleParser.PresetStyles.HASSEL_STYLE_4
+        const val HASSEL_TEXT_STYLE_1 = WatermarkStyleParser.PresetStyles.HASSEL_TEXT_STYLE_1
+        const val HASSEL_TEXT_STYLE_2 = WatermarkStyleParser.PresetStyles.HASSEL_TEXT_STYLE_2
+        
+        // Brand スタイル
+        const val BRAND_COLOR_OS = WatermarkStyleParser.PresetStyles.BRAND_COLOR_OS
+        const val BRAND_FIND_X = WatermarkStyleParser.PresetStyles.BRAND_FIND_X
+        const val BRAND_IMAGINE = WatermarkStyleParser.PresetStyles.BRAND_IMAGINE
+        const val BRAND_BREAK_THROUGH = WatermarkStyleParser.PresetStyles.BRAND_BREAK_THROUGH
+        const val BRAND_LUMO_IMAGE = WatermarkStyleParser.PresetStyles.BRAND_LUMO_IMAGE
+        
+        // Film スタイル
+        const val FILM_STYLE_1 = WatermarkStyleParser.PresetStyles.FILM_STYLE_1
+        const val FILM_STYLE_2 = WatermarkStyleParser.PresetStyles.FILM_STYLE_2
+        const val FILM_REALME_1 = WatermarkStyleParser.PresetStyles.FILM_REALME_1
+        const val FILM_REALME_2 = WatermarkStyleParser.PresetStyles.FILM_REALME_2
+        
+        // Master Sign スタイル
+        const val MASTER_SIGN_1 = WatermarkStyleParser.PresetStyles.MASTER_SIGN_1
+        const val MASTER_SIGN_2 = WatermarkStyleParser.PresetStyles.MASTER_SIGN_2
+        const val MASTER_SIGN_3 = WatermarkStyleParser.PresetStyles.MASTER_SIGN_3
+        const val MASTER_SIGN_4 = WatermarkStyleParser.PresetStyles.MASTER_SIGN_4
+        
+        // Retro Camera スタイル
+        const val RETRO_CAMERA_1 = WatermarkStyleParser.PresetStyles.RETRO_CAMERA_1
+        const val RETRO_CAMERA_2 = WatermarkStyleParser.PresetStyles.RETRO_CAMERA_2
+        const val RETRO_CAMERA_3 = WatermarkStyleParser.PresetStyles.RETRO_CAMERA_3
+        const val RETRO_CAMERA_4 = WatermarkStyleParser.PresetStyles.RETRO_CAMERA_4
+        const val RETRO_CAMERA_5 = WatermarkStyleParser.PresetStyles.RETRO_CAMERA_5
+        
+        // Text Style スタイル
+        const val TEXT_STYLE_1 = WatermarkStyleParser.PresetStyles.TEXT_STYLE_1
+        const val TEXT_STYLE_2 = WatermarkStyleParser.PresetStyles.TEXT_STYLE_2
+        const val TEXT_STYLE_3 = WatermarkStyleParser.PresetStyles.TEXT_STYLE_3
+        const val VIDEO_TEXT_STYLE_1 = WatermarkStyleParser.PresetStyles.VIDEO_TEXT_STYLE_1
+        const val VIDEO_TEXT_STYLE_2 = WatermarkStyleParser.PresetStyles.VIDEO_TEXT_STYLE_2
+        const val VIDEO_TEXT_STYLE_3 = WatermarkStyleParser.PresetStyles.VIDEO_TEXT_STYLE_3
+        
+        // Video Hasselblad スタイル
+        const val VIDEO_HASSEL_TEXT_STYLE_1 = WatermarkStyleParser.PresetStyles.VIDEO_HASSEL_TEXT_STYLE_1
+        const val VIDEO_HASSEL_TEXT_STYLE_2 = WatermarkStyleParser.PresetStyles.VIDEO_HASSEL_TEXT_STYLE_2
+        
+        // Realme スタイル
+        const val REALME_BRAND_1 = WatermarkStyleParser.PresetStyles.REALME_BRAND_1
+        const val REALME_BRAND_2 = WatermarkStyleParser.PresetStyles.REALME_BRAND_2
+        const val REALME_BRAND_3 = WatermarkStyleParser.PresetStyles.REALME_BRAND_3
+        const val REALME_EXCLUSIVE_MEMORY_1 = WatermarkStyleParser.PresetStyles.REALME_EXCLUSIVE_MEMORY_1
+        const val REALME_EXCLUSIVE_MEMORY_2 = WatermarkStyleParser.PresetStyles.REALME_EXCLUSIVE_MEMORY_2
+        const val REALME_EXCLUSIVE_MEMORY_3 = WatermarkStyleParser.PresetStyles.REALME_EXCLUSIVE_MEMORY_3
+        const val REALME_INSPIRATION_PHOTO_1 = WatermarkStyleParser.PresetStyles.REALME_INSPIRATION_PHOTO_1
+        const val REALME_INSPIRATION_PHOTO_2 = WatermarkStyleParser.PresetStyles.REALME_INSPIRATION_PHOTO_2
+        const val REALME_INSPIRATION_PHOTO_3 = WatermarkStyleParser.PresetStyles.REALME_INSPIRATION_PHOTO_3
+        
+        // Spring Festival スタイル
+        const val SONGKRAN_HOLIDAY_2025 = WatermarkStyleParser.PresetStyles.SONGKRAN_HOLIDAY_2025
+        
+        /**
+         * すべてのプリセットIDを取得
+         */
+        fun getAllPresets(): List<String> = WatermarkStyleParser.PresetStyles.getAllStyleIds()
+        
+        /**
+         * カテゴリ別にプリセットを取得
+         */
+        fun getPresetsByCategory(category: String): List<String> =
+            WatermarkStyleParser.PresetStyles.getStylesByCategory(category)
+    }
         const val HORIZONTAL_BOTTOM = "style_048_hasselblad_horizontal_bottom_v2"
         const val HORIZONTAL_CENTER = "style_049_hasselblad_horizontal_center_v2"
     }
