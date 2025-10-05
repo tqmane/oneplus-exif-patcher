@@ -163,7 +163,4 @@ class HasselbladWatermarkManager(private val context: Context) {
         fun getPresetsByCategory(category: String): List<String> =
             WatermarkStyleParser.PresetStyles.getStylesByCategory(category)
     }
-        const val HORIZONTAL_BOTTOM = "style_048_hasselblad_horizontal_bottom_v2"
-        const val HORIZONTAL_CENTER = "style_049_hasselblad_horizontal_center_v2"
-    }
 }
