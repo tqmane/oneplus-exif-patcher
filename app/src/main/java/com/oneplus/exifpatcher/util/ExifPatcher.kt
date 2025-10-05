@@ -25,13 +25,15 @@ object ExifPatcher {
      * @param sourceUri URI of the source image
      * @param destinationFile DocumentFile where the patched image will be saved
      * @param fileName Name for the destination file
+     * @param customModelName Optional custom model name to set (null to preserve original)
      * @return true if processing was successful, false otherwise
      */
     fun patchImage(
         context: Context,
         sourceUri: Uri,
         destinationFile: DocumentFile,
-        fileName: String
+        fileName: String,
+        customModelName: String? = null
     ): Boolean {
         return try {
             // Create a new file in the destination directory
@@ -53,7 +55,15 @@ object ExifPatcher {
             
             // Set OnePlus-specific EXIF tags
             exif.setAttribute(ExifInterface.TAG_MAKE, MAKE)  // Set Make to "OnePlus"
-            // Note: We preserve the original Model metadata
+            
+            // Set Model if custom name is provided
+            customModelName?.let { modelName ->
+                if (modelName.isNotEmpty()) {
+                    exif.setAttribute(ExifInterface.TAG_MODEL, modelName)
+                }
+            }
+            // Note: If customModelName is null or empty, we preserve the original Model metadata
+            
             exif.setAttribute(ExifInterface.TAG_USER_COMMENT, USER_COMMENT)  // Set UserComment to "oplus_1048864"
             
             // Try to set XMP Device tag
@@ -116,6 +126,7 @@ object ExifPatcher {
      * @param context Application context
      * @param sourceUris List of source image URIs
      * @param destinationDir Destination directory (as DocumentFile) for patched images
+     * @param customModelName Optional custom model name to set (null to preserve original)
      * @param onProgress Callback for progress updates (current index, total count)
      * @return Number of successfully processed images
      */
@@ -123,6 +134,7 @@ object ExifPatcher {
         context: Context,
         sourceUris: List<Uri>,
         destinationDir: DocumentFile,
+        customModelName: String? = null,
         onProgress: (Int, Int) -> Unit
     ): Int {
         var successCount = 0
@@ -133,7 +145,7 @@ object ExifPatcher {
             // Generate unique filename
             val fileName = "patched_${System.currentTimeMillis()}_$index.jpg"
             
-            if (patchImage(context, uri, destinationDir, fileName)) {
+            if (patchImage(context, uri, destinationDir, fileName, customModelName)) {
                 successCount++
             }
         }

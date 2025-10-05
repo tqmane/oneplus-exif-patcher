@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -167,6 +168,139 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary
                         )
+                    }
+                }
+            }
+            
+            // Model name configuration
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "モデル名の設定（オプション）",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "空欄の場合は元のモデル名を保持します",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    // Custom input field
+                    var showAddButton by remember { mutableStateOf(false) }
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.customModelName,
+                            onValueChange = { 
+                                viewModel.setCustomModelName(it)
+                                showAddButton = it.isNotBlank() && !uiState.modelPresets.contains(it.trim())
+                            },
+                            label = { Text("モデル名") },
+                            placeholder = { Text("例: OnePlus 12") },
+                            modifier = Modifier.weight(1f),
+                            enabled = !uiState.isProcessing,
+                            singleLine = true
+                        )
+                        
+                        // Add preset button
+                        if (showAddButton) {
+                            FilledTonalButton(
+                                onClick = {
+                                    viewModel.addPreset(uiState.customModelName)
+                                    showAddButton = false
+                                },
+                                enabled = !uiState.isProcessing,
+                                modifier = Modifier.height(56.dp)
+                            ) {
+                                Text("保存")
+                            }
+                        }
+                    }
+                    
+                    if (uiState.customModelName.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "設定: ${uiState.customModelName}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    
+                    // Preset chips
+                    if (uiState.modelPresets.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "保存済みプリセット（長押しで削除）:",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Display presets in a flow layout
+                        var presetToDelete by remember { mutableStateOf<String?>(null) }
+                        
+                        androidx.compose.foundation.layout.FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            uiState.modelPresets.forEach { preset ->
+                                FilterChip(
+                                    selected = uiState.customModelName == preset,
+                                    onClick = {
+                                        viewModel.setCustomModelName(preset)
+                                        showAddButton = false
+                                    },
+                                    label = { Text(preset) },
+                                    enabled = !uiState.isProcessing,
+                                    modifier = Modifier.combinedClickable(
+                                        onClick = {
+                                            viewModel.setCustomModelName(preset)
+                                            showAddButton = false
+                                        },
+                                        onLongClick = {
+                                            presetToDelete = preset
+                                        }
+                                    )
+                                )
+                            }
+                        }
+                        
+                        // Delete confirmation dialog
+                        presetToDelete?.let { preset ->
+                            AlertDialog(
+                                onDismissRequest = { presetToDelete = null },
+                                title = { Text("プリセットを削除") },
+                                text = { Text("「$preset」を削除しますか？") },
+                                confirmButton = {
+                                    TextButton(
+                                        onClick = {
+                                            viewModel.removePreset(preset)
+                                            if (uiState.customModelName == preset) {
+                                                viewModel.setCustomModelName("")
+                                            }
+                                            presetToDelete = null
+                                        }
+                                    ) {
+                                        Text("削除")
+                                    }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { presetToDelete = null }) {
+                                        Text("キャンセル")
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }

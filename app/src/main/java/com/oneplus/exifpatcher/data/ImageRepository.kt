@@ -17,12 +17,14 @@ class ImageRepository(private val context: Context) {
      * 
      * @param imageUris List of image URIs to process
      * @param destinationUri URI of the destination directory
+     * @param customModelName Optional custom model name to set (null to preserve original)
      * @param onProgress Callback for progress updates
      * @return Result containing success count or error
      */
     suspend fun processImages(
         imageUris: List<Uri>,
         destinationUri: Uri,
+        customModelName: String? = null,
         onProgress: (Int, Int) -> Unit
     ): Result<Int> = withContext(Dispatchers.IO) {
         try {
@@ -39,6 +41,7 @@ class ImageRepository(private val context: Context) {
                 context = context,
                 sourceUris = imageUris,
                 destinationDir = destinationDir,
+                customModelName = customModelName,
                 onProgress = onProgress
             )
             

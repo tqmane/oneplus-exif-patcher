@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.oneplus.exifpatcher.data.ImageRepository
+import com.oneplus.exifpatcher.data.PresetRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +18,8 @@ import kotlinx.coroutines.launch
 data class MainUiState(
     val selectedImages: List<Uri> = emptyList(),
     val destinationUri: Uri? = null,
+    val customModelName: String = "",
+    val modelPresets: List<String> = emptyList(),
     val isProcessing: Boolean = false,
     val processingProgress: Pair<Int, Int>? = null,
     val successMessage: String? = null,
@@ -29,9 +32,19 @@ data class MainUiState(
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     
     private val repository = ImageRepository(application)
+    private val presetRepository = PresetRepository(application)
     
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
+    
+    init {
+        // Load presets on initialization
+        viewModelScope.launch {
+            presetRepository.presets.collect { presets ->
+                _uiState.update { it.copy(modelPresets = presets) }
+            }
+        }
+    }
     
     /**
      * Update selected images
@@ -45,6 +58,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun setDestinationUri(uri: Uri?) {
         _uiState.update { it.copy(destinationUri = uri, errorMessage = null) }
+    }
+    
+    /**
+     * Update custom model name
+     */
+    fun setCustomModelName(name: String) {
+        _uiState.update { it.copy(customModelName = name, errorMessage = null) }
     }
     
     /**
@@ -78,6 +98,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val result = repository.processImages(
                 imageUris = currentState.selectedImages,
                 destinationUri = currentState.destinationUri,
+                customModelName = currentState.customModelName.ifEmpty { null },
                 onProgress = { current, total ->
                     _uiState.update { it.copy(processingProgress = Pair(current, total)) }
                 }
@@ -111,5 +132,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun clearMessages() {
         _uiState.update { it.copy(successMessage = null, errorMessage = null) }
+    }
+    
+    /**
+     * Add a new model preset
+     */
+    fun addPreset(modelName: String) {
+        if (modelName.isNotBlank()) {
+            presetRepository.addPreset(modelName.trim())
+        }
+    }
+    
+    /**
+     * Remove a model preset
+     */
+    fun removePreset(modelName: String) {
+        presetRepository.removePreset(modelName)
     }
 }
