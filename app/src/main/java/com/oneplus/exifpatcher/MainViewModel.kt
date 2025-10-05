@@ -20,6 +20,8 @@ data class MainUiState(
     val destinationUri: Uri? = null,
     val customModelName: String = "",
     val modelPresets: List<String> = emptyList(),
+    val selectedWatermarkStyle: String? = null,  // 選択された透かしスタイルID
+    val watermarkCategory: String = "All",  // 選択されたカテゴリ
     val isProcessing: Boolean = false,
     val processingProgress: Pair<Int, Int>? = null,
     val successMessage: String? = null,
@@ -133,6 +135,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 imageUris = currentState.selectedImages,
                 destinationUri = currentState.destinationUri,
                 customModelName = currentState.customModelName.ifEmpty { null },
+                watermarkStyleId = currentState.selectedWatermarkStyle,
                 onProgress = { current, total ->
                     _uiState.update { it.copy(processingProgress = Pair(current, total)) }
                 }
@@ -182,5 +185,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun removePreset(modelName: String) {
         presetRepository.removePreset(modelName)
+    }
+    
+    /**
+     * Set selected watermark style
+     */
+    fun setWatermarkStyle(styleId: String?) {
+        _uiState.update { it.copy(selectedWatermarkStyle = styleId, errorMessage = null) }
+    }
+    
+    /**
+     * Set watermark category filter
+     */
+    fun setWatermarkCategory(category: String) {
+        _uiState.update { it.copy(watermarkCategory = category) }
     }
 }
