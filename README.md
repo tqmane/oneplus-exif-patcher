@@ -22,6 +22,30 @@ OnePlus EXIF Patcherは、画像のEXIFメタデータにOnePlus固有の情報�
 - ✅ **保存先選択** - ユーザーが処理済み画像の保存先を選択可能
 - ✅ **バックグラウンド処理** - 進捗表示付きの非同期処理
 - ✅ **クリーンなアーキテクチャ** - MVVM パターンを採用
+- 🔬 **Hasselblad透かし機能の調査完了** - [詳細はこちら](#hasselblad透かし機能)
+
+### 🎨 Hasselblad透かし機能
+
+OnePlus GalleryのHasselblad透かし機能を詳細に調査しました！
+
+**調査結果**:
+- ✅ JSONベースのスタイル定義を発見
+- ✅ フォントファイルを抽出
+- ✅ 透かしの構造を完全に解析
+- ✅ 実装方法を文書化
+
+**ドキュメント**:
+- 📄 [調査結果サマリー](HASSELBLAD_SUMMARY.md) - エグゼクティブサマリー
+- 📄 [詳細調査結果](HASSELBLAD_WATERMARK_INVESTIGATION.md) - 技術仕様と構造
+- 📄 [実装ガイド](HASSELBLAD_IMPLEMENTATION_GUIDE.md) - ステップバイステップの実装手順
+- 📄 [リソース抽出ガイド](photo/EXTRACT_RESOURCES_GUIDE.md) - 画像リソースの抽出方法
+
+**発見した要素**:
+- 8つのHasselbladスタイル（JSON定義）
+- 4つのロゴ画像リソース
+- フォントファイル（AvenirNext.ttc、Butler等）
+- ネイティブ描画ライブラリ
+
 
 ### 📋 必要要件
 
