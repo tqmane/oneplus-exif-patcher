@@ -1,0 +1,144 @@
+{
+  "styleId": "realme_brand_imprint_inspirationPhoto_2",
+  "baseImageSize": 360,
+  "version": 1,
+  "size": {
+    "leftMargin": 0,
+    "topMargin": 0,
+    "rightMargin": 0,
+    "bottomMargin": 60
+  },
+  "imageOffset": {
+    "startX": 0,
+    "startY": 0
+  },
+  "background": {
+    "backgroundType": 0,
+    "color": "#FFFFFF"
+  },
+  "bitmaps": [
+    {
+      "direction": 3,
+      "orientation": 0,
+      "position": {
+        "borderX": 0,
+        "borderY": 0
+      },
+      "width": -1,
+      "height": 60,
+      "elements": [
+        {
+          "id": 1,
+          "visible": true,
+          "content": {
+            "type": "elements",
+            "orientation": 1,
+            "width": 185
+          },
+          "position": {
+            "layoutGravity": "leftVerticalCenter",
+            "layoutGravityEnable": true,
+            "leftMargin": 20
+          },
+          "elements": [
+            {
+              "id": 2,
+              "visible": true,
+              "editable": false,
+              "content": {
+                "type": "text",
+                "textSource": 0
+              },
+              "paint": {
+                "fontType": 0,
+                "fontName": "OplusSans",
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "textSize": 12,
+                "fontWeight": 600,
+                "letterSpacing": 0.04,
+                "lineHeight": 14.06,
+                "alpha": 0.9,
+                "colors": ["#000000"],
+                "gradientType": -1
+              },
+              "position": {
+                "layoutGravity": "leftTop",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "topMargin": 0
+              }
+            },
+            {
+              "id": 3,
+              "visible": true,
+              "editable": true,
+              "content": {
+                "type": "text",
+                "textSource": 1
+              },
+              "paint": {
+                "font": "/system/fonts/OPSans-En-Regular.ttf",
+                "fontStyle": 1,
+                "textSize": 7.2,
+                "alpha": 1,
+                "gradientType": -1,
+                "colors": [
+                  "#000000"
+                ]
+              },
+              "position": {
+                "layoutGravity": "leftTop",
+                "leftMargin": 0,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "visible": true,
+          "editable": false,
+          "spaceUse": "occupy",
+          "content": {
+            "type": "space"
+          },
+          "layoutWeight": 1
+        },
+        {
+          "id": 5,
+          "visible": true,
+          "editable": true,
+          "content": {
+            "type": "image",
+            "bitmapSourceType": 4,
+            "bitmap": "color_card_perspective",
+            "bitmapResName": "color_card_perspective",
+            "width": 42,
+            "height": 21,
+            "scaleType": 5,
+            "colorCard": {
+              "colorX": 23,
+              "colorY": 20,
+              "colorType": 1,
+              "colorDistance": 5,
+              "colorCount": 5,
+              "colorRadius": 7,
+              "colorBlurScope": 3
+            }
+          },
+          "position": {
+            "layoutGravity": "rightTop",
+            "layoutGravityEnable": true,
+            "rightMargin": 23,
+            "bottomMargin": 0,
+            "leftMargin": 0,
+            "topMargin": 20
+          }
+        }
+      ]
+    }
+  ]
+}

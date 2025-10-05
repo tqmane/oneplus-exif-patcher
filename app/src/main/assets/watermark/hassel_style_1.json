@@ -1,0 +1,253 @@
+{
+  "styleId": "hassel_style_1",
+  "baseImageSize": 360,
+  "size": {
+    "leftMargin": 0,
+    "topMargin": 0,
+    "rightMargin": 0,
+    "bottomMargin": 60
+  },
+  "imageOffset": {
+    "startX": 0,
+    "startY": 0
+  },
+  "background": {
+    "backgroundType": 0,
+    "color": "#FFFFFF"
+  },
+  "bitmaps": [
+    {
+      "direction": 3,
+      "orientation": 0,
+      "position": {
+        "borderX": 0,
+        "borderY": 0
+      },
+      "width": -1,
+      "height": 60,
+      "elements": [
+        {
+          "id": 11,
+          "visible": true,
+          "editable": false,
+          "content": {
+            "type": "elements",
+            "orientation": 1,
+            "width": 160
+          },
+          "position": {
+            "layoutGravity": "leftVerticalCenter",
+            "layoutGravityEnable": true,
+            "leftMargin": 0,
+            "topMargin": 0,
+            "rightMargin": 0,
+            "bottomMargin": 0
+          },
+          "elements": [
+            {
+              "id": 1,
+              "visible": true,
+              "editable": false,
+              "content": {
+                "type": "text",
+                "textSource": 0,
+                "isExtendModel": false,
+                "modelSuffix": ""
+              },
+              "position": {
+                "layoutGravity": "leftTop",
+                "layoutGravityEnable": true,
+                "leftMargin": 24,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              },
+              "paint": {
+                "fontType": 0,
+                "fontName": "OplusSans",
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "fontWeight": 700,
+                "textSize": 13,
+                "letterSpacing": 0.05,
+                "lineHeight": 15.24,
+                "alpha": 1,
+                "gradientType": -1,
+                "colors": [
+                  "#000000"
+                ]
+              }
+            },
+            {
+              "id": 12,
+              "visible": false,
+              "editable": false,
+              "content": {
+                "type": "text",
+                "textSource": 0,
+                "isExtendModel": true,
+                "modelSuffix": ""
+              },
+              "position": {
+                "layoutGravity": "leftTop",
+                "layoutGravityEnable": true,
+                "leftMargin": 24,
+                "topMargin": 1.77,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              },
+              "paint": {
+                "fontType": 0,
+                "fontName": "OplusSans",
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "fontWeight": 500,
+                "textSize": 10,
+                "letterSpacing": 0,
+                "lineHeight": 14.79,
+                "alpha": 1,
+                "gradientType": -1,
+                "colors": [
+                  "#000000"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "visible": true,
+          "editable": false,
+          "spaceUse": "occupy",
+          "content": {
+            "type": "space"
+          },
+          "layoutWeight": 1
+        },
+        {
+          "id": 3,
+          "visible": true,
+          "content": {
+            "type": "elements",
+            "orientation": 1,
+            "width": 148
+          },
+          "position": {
+            "layoutGravity": "rightVerticalCenter",
+            "layoutGravityEnable": true,
+            "leftMargin": 0,
+            "topMargin": 0,
+            "rightMargin": 24,
+            "bottomMargin": 0
+          },
+          "elements": [
+            {
+              "id": 4,
+              "visible": true,
+              "editable": false,
+              "content": {
+                "type": "image",
+                "bitmapSourceType": 0,
+                "bitmap": "hasselblad_watermark_dark",
+                "bitmapResName": "hasselblad_watermark_dark",
+                "width": 112.8,
+                "height": 8.96,
+                "scaleType": 5
+              },
+              "position": {
+                "layoutGravity": "rightTop",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              }
+            },
+            {
+              "id": 5,
+              "visible": true,
+              "content": {
+                "type": "elements",
+                "orientation": 0
+              },
+              "position": {
+                "layoutGravity": "rightBottom",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "topMargin": 8.94,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              },
+              "elements": [
+                {
+                  "id": 6,
+                  "visible": true,
+                  "editable": true,
+                  "possibleNextIds": [7],
+                  "content": {
+                    "type": "shape",
+                    "shape": "circle",
+                    "diameter": 7.2,
+                    "width": -1,
+                    "height": -1
+                  },
+                  "paint": {
+                    "gradientType": -1,
+                    "colors": [
+                      "#FF8933"
+                    ],
+                    "lightColor": "#FF8933",
+                    "darkColor": "#FF8933",
+                    "colorPositions": null
+                  },
+                  "position": {
+                    "layoutGravity": "leftVerticalCenter",
+                    "layoutGravityEnable": true,
+                    "leftMargin": 0,
+                    "topMargin": 0,
+                    "rightMargin": 0,
+                    "bottomMargin": 0
+                  }
+                },
+                {
+                  "id": 7,
+                  "visible": true,
+                  "editable": true,
+                  "affinityId": 6,
+                  "content": {
+                    "type": "text",
+                    "textSource": 1
+                  },
+                  "paint": {
+                    "fontType": 0,
+                    "fontName": "OplusSans",
+                    "font": "/system/fonts/SysSans-En-Regular.ttf",
+                    "fontFileType": 1,
+                    "fontWeight": 700,
+                    "textSize": 7.2,
+                    "letterSpacing": 0.03,
+                    "lineHeight": 8.44,
+                    "alpha": 0.7,
+                    "lightAlpha": 0.7,
+                    "gradientType": -1,
+                    "colors": [
+                      "#000000"
+                    ]
+                  },
+                  "position": {
+                    "layoutGravity": "verticalCenter",
+                    "layoutGravityEnable": true,
+                    "leftMargin": 6.6,
+                    "topMargin": 0,
+                    "rightMargin": 0,
+                    "bottomMargin": 0
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

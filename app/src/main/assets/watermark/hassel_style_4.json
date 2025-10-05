@@ -1,0 +1,497 @@
+{
+  "styleId": "hassel_style_4",
+  "baseImageSize": 360,
+  "size": {
+    "leftMargin": 10,
+    "topMargin": 79,
+    "rightMargin": 10,
+    "bottomMargin": 79
+  },
+  "imageOffset": {
+    "startX": 10,
+    "startY": 79
+  },
+  "background": {
+    "backgroundType": 0,
+    "color": "#FFFFFF"
+  },
+  "bitmaps": [
+    {
+      "direction": 1,
+      "orientation": 0,
+      "position": {
+        "borderX": 10,
+        "borderY": 79,
+        "gravity": "center"
+      },
+      "width": -1,
+      "height": 79,
+      "elements": [
+        {
+          "id": 1,
+          "visible": true,
+          "editable": false,
+          "content": {
+            "type": "image",
+            "bitmapSourceType": 0,
+            "bitmap": "hasselblad_watermark_dark",
+            "bitmapResName": "hasselblad_watermark_dark",
+            "width": 116,
+            "height": 9,
+            "scaleType": 2
+          },
+          "position": {
+            "layoutGravity": "center",
+            "layoutGravityEnable": true,
+            "leftMargin": 0,
+            "rightMargin": 0,
+            "topMargin": 0,
+            "bottomMargin": 0
+          }
+        }
+      ]
+    },
+    {
+      "direction": 3,
+      "orientation": 0,
+      "position": {
+        "borderX": 10,
+        "borderY": 0,
+        "gravity": "center"
+      },
+      "width": -1,
+      "height": 79,
+      "elements": [
+        {
+          "id": 2,
+          "content": {
+            "type": "elements",
+            "orientation": 1,
+            "width": 340
+          },
+          "position": {
+            "layoutGravity": "center",
+            "layoutGravityEnable": true,
+            "leftMargin": 0,
+            "rightMargin": 0,
+            "topMargin": 0,
+            "bottomMargin": 0
+          },
+          "elements": [
+            {
+              "id": 3,
+              "visible": true,
+              "editable": false,
+              "content": {
+                "type": "text",
+                "textSource": 0
+              },
+              "position": {
+                "layoutGravity": "topHorCenter",
+                "layoutGravityEnable": true,
+                "topMargin": 0
+              },
+              "paint": {
+                "fontType": 2,
+                "fontName":"AvenirNext.zip",
+                "fontFileType": 0,
+                "ttcIndex": 5,
+                "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                "md5": "33ca1145fa326691413fa356abb82753",
+                "fontWeight": 500,
+                "textSize": 12,
+                "letterSpacing": 0.03,
+                "lineHeight": 16.39,
+                "alpha": 1,
+                "gradientType": -1,
+                "colors": [
+                  "#000000"
+                ]
+              }
+            },
+            {
+              "id": 4,
+              "visible": true,
+              "editable": false,
+              "content": {
+                "type": "elements",
+                "orientation": 0
+              },
+              "position": {
+                "layoutGravity": "horCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "topMargin": 3,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              },
+              "elements": [
+                {
+                  "id": 5,
+                  "visible": true,
+                  "editable": true,
+                  "replaceId": 14,
+                  "asGroup": true,
+                  "content": {
+                    "type": "elements",
+                    "orientation": 0,
+                    "textSource": 1
+                  },
+                  "elements": [
+                    {
+                      "id": 6,
+                      "groupId": 5,
+                      "visible": true,
+                      "editable": false,
+                      "content": {
+                        "type": "text",
+                        "textSource": 1,
+                        "textSourcePart": "FLTitle"
+                      },
+                      "position": {
+                        "layoutGravity": "leftVerticalCenter",
+                        "layoutGravityEnable": true,
+                        "leftMargin": 0,
+                        "topMargin": 0,
+                        "rightMargin": 0,
+                        "bottomMargin": 0
+                      },
+                      "paint": {
+                        "fontType": 2,
+                        "fontName":"AvenirNext.zip",
+                        "fontFileType": 0,
+                        "ttcIndex": 5,
+                        "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                        "md5": "33ca1145fa326691413fa356abb82753",
+                        "fontWeight": 500,
+                        "gradientType": -1,
+                        "textSize": 8.45,
+                        "letterSpacing": 0.03,
+                        "lineHeight": 11.54,
+                        "alpha": 0.65,
+                        "lightAlpha": 0.65,
+                        "colors": [
+                          "#000000"
+                        ]
+                      }
+                    },
+                    {
+                      "id": 7,
+                      "groupId": 5,
+                      "visible": true,
+                      "editable": false,
+                      "content": {
+                        "type": "text",
+                        "textSource": 1,
+                        "textSourcePart": "MMValue"
+                      },
+                      "position": {
+                        "layoutGravity": "verticalCenter",
+                        "layoutGravityEnable": true,
+                        "leftMargin": 8
+                      },
+                      "paint": {
+                        "fontType": 2,
+                        "fontName":"AvenirNext.zip",
+                        "fontFileType": 0,
+                        "ttcIndex": 5,
+                        "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                        "md5": "33ca1145fa326691413fa356abb82753",
+                        "fontWeight": 500,
+                        "gradientType": -1,
+                        "textSize": 8.45,
+                        "letterSpacing": 0.03,
+                        "lineHeight": 11.54,
+                        "alpha": 1,
+                        "colors": [
+                          "#000000"
+                        ]
+                      }
+                    },
+                    {
+                      "id": 27,
+                      "groupId": 5,
+                      "visible": true,
+                      "editable": false,
+                      "content": {
+                        "type": "text",
+                        "textSource": 1,
+                        "textSourcePart": "MMTitle"
+                      },
+                      "position": {
+                        "layoutGravity": "verticalCenter",
+                        "layoutGravityEnable": true,
+                        "leftMargin": 0
+                      },
+                      "paint": {
+                        "fontType": 2,
+                        "fontName":"AvenirNext.zip",
+                        "fontFileType": 0,
+                        "ttcIndex": 5,
+                        "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                        "md5": "33ca1145fa326691413fa356abb82753",
+                        "fontWeight": 500,
+                        "gradientType": -1,
+                        "textSize": 8.45,
+                        "letterSpacing": 0.03,
+                        "lineHeight": 11.54,
+                        "alpha": 1,
+                        "colors": [
+                          "#000000"
+                        ]
+                      }
+                    },
+                    {
+                      "id": 8,
+                      "groupId": 5,
+                      "visible": true,
+                      "editable": false,
+                      "content": {
+                        "type": "text",
+                        "textSource": 1,
+                        "textSourcePart": "ApertureTitle"
+                      },
+                      "position": {
+                        "layoutGravity": "verticalCenter",
+                        "layoutGravityEnable": true,
+                        "leftMargin": 16
+                      },
+                      "paint": {
+                        "fontType": 2,
+                        "fontName":"AvenirNext.zip",
+                        "fontFileType": 0,
+                        "ttcIndex": 5,
+                        "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                        "md5": "33ca1145fa326691413fa356abb82753",
+                        "fontWeight": 500,
+                        "gradientType": -1,
+                        "textSize": 8.45,
+                        "letterSpacing": 0.03,
+                        "lineHeight": 11.54,
+                        "alpha": 0.65,
+                        "lightAlpha": 0.65,
+                        "colors": [
+                          "#000000"
+                        ]
+                      }
+                    },
+                    {
+                      "id": 9,
+                      "groupId": 5,
+                      "visible": true,
+                      "editable": false,
+                      "content": {
+                        "type": "text",
+                        "textSource": 1,
+                        "textSourcePart": "ApertureValue"
+                      },
+                      "position": {
+                        "layoutGravity": "verticalCenter",
+                        "layoutGravityEnable": true,
+                        "leftMargin": 8
+                      },
+                      "paint": {
+                        "fontType": 2,
+                        "fontName":"AvenirNext.zip",
+                        "fontFileType": 0,
+                        "ttcIndex": 5,
+                        "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                        "md5": "33ca1145fa326691413fa356abb82753",
+                        "fontWeight": 500,
+                        "gradientType": -1,
+                        "textSize": 8.45,
+                        "letterSpacing": 0.03,
+                        "lineHeight": 11.54,
+                        "alpha": 1,
+                        "colors": [
+                          "#000000"
+                        ]
+                      }
+                    },
+                    {
+                      "id": 10,
+                      "groupId": 5,
+                      "visible": true,
+                      "editable": false,
+                      "content": {
+                        "type": "text",
+                        "textSource": 1,
+                        "textSourcePart": "ShutterTitle"
+                      },
+                      "position": {
+                        "layoutGravity": "verticalCenter",
+                        "layoutGravityEnable": true,
+                        "leftMargin": 16
+                      },
+                      "paint": {
+                        "fontType": 2,
+                        "fontName":"AvenirNext.zip",
+                        "fontFileType": 0,
+                        "ttcIndex": 5,
+                        "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                        "md5": "33ca1145fa326691413fa356abb82753",
+                        "fontWeight": 500,
+                        "gradientType": -1,
+                        "textSize": 8.45,
+                        "letterSpacing": 0.03,
+                        "lineHeight": 11.54,
+                        "alpha": 0.65,
+                        "lightAlpha": 0.65,
+                        "colors": [
+                          "#000000"
+                        ]
+                      }
+                    },
+                    {
+                      "id": 11,
+                      "groupId": 5,
+                      "visible": true,
+                      "editable": false,
+                      "content": {
+                        "type": "text",
+                        "textSource": 1,
+                        "textSourcePart": "SValue"
+                      },
+                      "position": {
+                        "layoutGravity": "verticalCenter",
+                        "layoutGravityEnable": true,
+                        "leftMargin": 8
+                      },
+                      "paint": {
+                        "fontType": 2,
+                        "fontName":"AvenirNext.zip",
+                        "fontFileType": 0,
+                        "ttcIndex": 5,
+                        "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                        "md5": "33ca1145fa326691413fa356abb82753",
+                        "fontWeight": 500,
+                        "gradientType": -1,
+                        "textSize": 8.45,
+                        "letterSpacing": 0.03,
+                        "lineHeight": 11.54,
+                        "alpha": 1,
+                        "colors": [
+                          "#000000"
+                        ]
+                      }
+                    },
+                    {
+                      "id": 12,
+                      "groupId": 5,
+                      "visible": true,
+                      "editable": false,
+                      "content": {
+                        "type": "text",
+                        "textSource": 1,
+                        "textSourcePart": "ISOTitle",
+                        "textSourcePartValue": "ISO"
+                      },
+                      "position": {
+                        "layoutGravity": "verticalCenter",
+                        "layoutGravityEnable": true,
+                        "leftMargin": 16
+                      },
+                      "paint": {
+                        "fontType": 2,
+                        "fontName":"AvenirNext.zip",
+                        "fontFileType": 0,
+                        "ttcIndex": 5,
+                        "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                        "md5": "33ca1145fa326691413fa356abb82753",
+                        "fontWeight": 500,
+                        "gradientType": -1,
+                        "textSize": 8.45,
+                        "letterSpacing": 0.03,
+                        "lineHeight": 11.54,
+                        "alpha": 0.65,
+                        "colors": [
+                          "#000000"
+                        ]
+                      }
+                    },
+                    {
+                      "id": 13,
+                      "groupId": 5,
+                      "visible": true,
+                      "editable": false,
+                      "content": {
+                        "type": "text",
+                        "textSource": 1,
+                        "textSourcePart": "ISOValue"
+                      },
+                      "position": {
+                        "layoutGravity": "verticalCenter",
+                        "layoutGravityEnable": true,
+                        "leftMargin": 8
+                      },
+                      "paint": {
+                        "fontType": 2,
+                        "fontName":"AvenirNext.zip",
+                        "fontFileType": 0,
+                        "ttcIndex": 5,
+                        "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                        "md5": "33ca1145fa326691413fa356abb82753",
+                        "fontWeight": 500,
+                        "gradientType": -1,
+                        "textSize": 8.45,
+                        "letterSpacing": 0.03,
+                        "lineHeight": 11.54,
+                        "alpha": 1,
+                        "colors": [
+                          "#000000"
+                        ]
+                      }
+                    }
+                  ],
+                  "position": {
+                    "layoutGravity": "horCenter",
+                    "layoutGravityEnable": true,
+                    "leftMargin": 0,
+                    "topMargin": 0,
+                    "rightMargin": 0,
+                    "bottomMargin": 0
+                  }
+                },
+                {
+                  "id": 14,
+                  "replaceId": 5,
+                  "visible": false,
+                  "editable": true,
+                  "content": {
+                    "type": "text",
+                    "textSource": 2
+                  },
+                  "paint": {
+                    "fontType": 2,
+                    "fontName":"AvenirNext.zip",
+                    "fontFileType": 0,
+                    "ttcIndex": 5,
+                    "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                    "md5": "33ca1145fa326691413fa356abb82753",
+                    "fontWeight": 500,
+                    "gradientType": -1,
+                    "textSize": 8.45,
+                    "letterSpacing": 0.03,
+                    "lineHeight": 11.54,
+                    "alpha": 1,
+                    "colors": [
+                      "#000000"
+                    ]
+                  },
+                  "position": {
+                    "layoutGravity": "horCenter",
+                    "layoutGravityEnable": true,
+                    "leftMargin": 0,
+                    "topMargin": 0,
+                    "rightMargin": 0,
+                    "bottomMargin": 0
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+﻿{
+  "styleId": "restrict_local_songkran_holiday_2025_style_1",
+  "baseImageSize": 360,
+  "imageOffset": {
+    "startX": 0,
+    "startY": 0
+  },
+  "size": {
+    "bottomMargin": 60,
+    "leftMargin": 0,
+    "rightMargin": 0,
+    "topMargin": 0
+  },
+  "background": {
+    "backgroundType": 0,
+    "color": "#D4EFE5"
+  },
+  "thumbnail": {
+    "bitmap": "songkran_watermark_style_thumbnail",
+    "bitmapResName": "songkran_watermark_style_thumbnail",
+    "sourceType": 1
+  },
+  "largeThumbnail": {
+    "bitmap": "songkran_watermark_style_large_thumbnail",
+    "bitmapResName": "songkran_watermark_style_large_thumbnail",
+    "sourceType": 1
+  },
+  "bitmaps": [
+    {
+      "direction": 3,
+      "elements": [
+        {
+          "content": {
+            "orientation": 1,
+            "type": "elements"
+          },
+          "elements": [
+            {
+              "content": {
+                "maxWidth": 166,
+                "textSource": 0,
+                "type": "text"
+              },
+              "editable": false,
+              "id": 2,
+              "paint": {
+                "alpha": 1,
+                "colorPositions": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "colors": [
+                  "#F7EDBC",
+                  "#000000",
+                  "#B0824A"
+                ],
+                "coordinateArray": [
+                  20,
+                  30,
+                  166,
+                  30
+                ],
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "fontName": "OplusSans",
+                "fontType": 0,
+                "fontWeight": 700,
+                "gradientType": 0,
+                "largeModelLength": 18,
+                "largeModelTextSize": 9.5,
+                "letterSpacing": 0.05,
+                "lineHeight": 15.24,
+                "textSize": 13
+              },
+              "position": {
+                "layoutGravity": "leftTop",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "topMargin": 0
+              },
+              "visible": true
+            },
+            {
+              "content": {
+                "aiContent": "สุขสันต์วันสงกรานต์",
+                "maxWidth": 166,
+                "textSource": 5,
+                "type": "text"
+              },
+              "editable": true,
+              "id": 3,
+              "paint": {
+                "alpha": 1,
+                "colorPositions": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "colors": [
+                  "#9E6D2C"
+                ],
+                "coordinateArray": [
+                  20,
+                  30,
+                  166,
+                  30
+                ],
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "fontName": "OplusSans",
+                "fontType": 0,
+                "fontWeight": 400,
+                "gradientType": 0,
+                "longTextLengthThreshold": 17,
+                "longContentTextSize": 9.0,
+                "defaultTextSize": 10.0,
+                "letterSpacing": 0.03,
+                "lineHeight": 12.25,
+                "textSize": 10
+              },
+              "position": {
+                "layoutGravity": "leftTop",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "topMargin": 3
+              },
+              "visible": true
+            }
+          ],
+          "id": 1,
+          "position": {
+            "layoutGravity": "leftVerticalCenter",
+            "layoutGravityEnable": true,
+            "leftMargin": 20
+          },
+          "visible": true
+        },
+        {
+          "content": {
+            "type": "space"
+          },
+          "id": 4,
+          "layoutWeight": 1,
+          "visible": true
+        },
+        {
+          "content": {
+            "bitmap": "songkran_watermark_icon",
+            "bitmapResName": "songkran_watermark_icon",
+            "bitmapSourceType": 0,
+            "height": 60,
+            "scaleType": 3,
+            "type": "image",
+            "width": 176
+          },
+          "editable": true,
+          "id": 5,
+          "position": {
+            "layoutGravity": "rightVerticalCenter",
+            "layoutGravityEnable": true,
+            "rightMargin": 0
+          },
+          "visible": true
+        }
+      ],
+      "height": 60,
+      "orientation": 0,
+      "position": {
+        "borderX": 0,
+        "borderY": 0
+      },
+      "width": -1
+    }
+  ]
+}

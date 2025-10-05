@@ -1,0 +1,122 @@
+{
+  "styleId": "personalize_brand_5",
+  "baseImageSize": 360,
+  "size": {
+    "leftMargin": 10,
+    "topMargin": 10,
+    "rightMargin": 10,
+    "bottomMargin": 111
+  },
+  "imageOffset": {
+    "startX": 10,
+    "startY": 10
+  },
+  "background": {
+    "backgroundType": 0,
+    "color": "#FFFFFF"
+  },
+  "bitmaps": [
+    {
+      "direction": 3,
+      "orientation": 1,
+      "position": {
+        "borderX": 10,
+        "borderY": 0,
+        "gravity": "center"
+      },
+      "width": -1,
+      "height": 111,
+      "elements": [
+        {
+          "id": 1,
+          "visible": true,
+          "content": {
+            "type": "elements",
+            "orientation": 1,
+            "width": 340
+          },
+          "elements": [
+            {
+              "id": 2,
+              "visible": true,
+              "editable": true,
+              "content": {
+                "type": "image",
+                "bitmapSourceType": 0,
+                "bitmap": "brand_break_through_dark",
+                "bitmapResName": "brand_break_through_dark",
+                "width": 68,
+                "height": 40,
+                "scaleType": 3
+              },
+              "position": {
+                "layoutGravity": "horCenter",
+                "layoutGravityEnable": true,
+                "bottomMargin": 6.5
+              }
+            },
+            {
+              "id": 3,
+              "visible": true,
+              "editable": false,
+              "content": {
+                "type": "text",
+                "textSource": 0
+              },
+              "paint": {
+                "fontType": 0,
+                "fontName": "OplusSans",
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "textSize": 12,
+                "letterSpacing": 0.02,
+                "lineHeight": 14.06,
+                "fontWeight": 600,
+                "alpha": 0.9,
+                "lightAlpha": 0.9,
+                "colors": ["#000000"],
+                "gradientType": -1
+              },
+              "position": {
+                "layoutGravity": "horCenter",
+                "layoutGravityEnable": true,
+                "topMargin": 0,
+                "bottomMargin": 3,
+                "withLogoBottomMargin": 3,
+                "noLogoBottomMargin": 5
+              }
+            },
+            {
+              "id": 4,
+              "visible": true,
+              "editable": true,
+              "content": {
+                "type": "text",
+                "textSource": 1
+              },
+              "paint": {
+                "fontType": 0,
+                "fontName": "OplusSans",
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "textSize": 8,
+                "fontWeight": 400,
+                "letterSpacing": 0.06,
+                "lineHeight": 9.38,
+                "alpha": 0.54,
+                "lightAlpha": 0.54,
+                "colors": ["#000000"],
+                "gradientType": -1
+              },
+              "position": {
+                "layoutGravity": "horCenter",
+                "layoutGravityEnable": true,
+                "topMargin": 0
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

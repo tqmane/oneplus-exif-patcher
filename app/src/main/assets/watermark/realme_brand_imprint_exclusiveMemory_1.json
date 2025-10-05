@@ -1,0 +1,189 @@
+{
+  "styleId": "realme_brand_imprint_exclusiveMemory_1",
+  "baseImageSize": 360,
+  "size": {
+    "leftMargin": 0,
+    "topMargin": 0,
+    "rightMargin": 0,
+    "bottomMargin": 60
+  },
+  "imageOffset": {
+    "startX": 0,
+    "startY": 0
+  },
+  "background": {
+    "backgroundType": 0,
+    "color": "#FFFFFF"
+  },
+  "bitmaps": [
+    {
+      "direction": 3,
+      "orientation": 0,
+      "position": {
+        "borderX": 0,
+        "borderY": 0
+      },
+      "width": -1,
+      "height": 60,
+      "elements": [
+        {
+          "id": 1,
+          "visible": true,
+          "content": {
+            "type": "elements",
+            "orientation": 1,
+            "width": 160
+          },
+          "position": {
+            "layoutGravity": "leftVerticalCenter",
+            "layoutGravityEnable": true,
+            "leftMargin": 0,
+            "topMargin": 0,
+            "rightMargin": 0,
+            "bottomMargin": 0
+          },
+          "elements": [
+            {
+              "id": 2,
+              "visible": true,
+              "editable": false,
+              "content": {
+                "type": "text",
+                "textSource": 0
+              },
+              "paint": {
+                "fontType": 2,
+                "fontName": "FZYaSongDB1GBK.zip",
+                "fontFileType": 1,
+                "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/77ad308d-dd6d-4a43-b24d-c634a56d5565.zip",
+                "md5": "e70a912839b253cf406efcb41cdd5739",
+                "textSize": 12,
+                "letterSpacing": 0.04,
+                "lineHeight": 14.4,
+                "fontWeight": 700,
+                "alpha": 0.9,
+                "colors": ["#000000"],
+                "gradientType": -1
+              },
+              "position": {
+                "layoutGravity": "leftTop",
+                "layoutGravityEnable": true,
+                "leftMargin": 24,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "visible": true,
+          "editable": false,
+          "spaceUse": "occupy",
+          "content": {
+            "type": "space"
+          },
+          "layoutWeight": 1
+        },
+        {
+          "id": 4,
+          "visible": true,
+          "content": {
+            "type": "elements",
+            "orientation": 1,
+            "width": 148
+          },
+          "position": {
+            "layoutGravity": "rightVerticalCenter",
+            "layoutGravityEnable": true,
+            "leftMargin": 0,
+            "topMargin": 0,
+            "rightMargin": 24,
+            "bottomMargin": 0
+          },
+          "elements": [
+            {
+              "id": 5,
+              "visible": true,
+              "editable": false,
+              "content": {
+                "type": "text",
+                "textSource": 7
+              },
+              "paint": {
+                "fontType": 2,
+                "fontName": "FZYaSongDB1GBK.zip",
+                "fontFileType": 1,
+                "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/77ad308d-dd6d-4a43-b24d-c634a56d5565.zip",
+                "md5": "e70a912839b253cf406efcb41cdd5739",
+                "textSize": 12,
+                "withLogoTextSize": 10.5,
+                "noLogoTextSize": 12,
+                "fontWeight": 700,
+                "letterSpacing": 0.04,
+                "lineHeight": 12.6,
+                "alpha": 0.9,
+                "colors": ["#000000"],
+                "gradientType": -1
+              },
+              "position": {
+                "layoutGravity": "rightTop",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              }
+            },
+            {
+              "id": 6,
+              "visible": true,
+              "content": {
+                "type": "elements",
+                "orientation": 0
+              },
+              "position": {
+                "layoutGravity": "rightBottom",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "topMargin": 6,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              },
+              "elements": [
+                {
+                  "id": 7,
+                  "visible": true,
+                  "editable": true,
+                  "content": {
+                    "type": "text",
+                    "textSource": 1
+                  },
+                  "paint": {
+                    "font": "/system/fonts/OPSans-En-Regular.ttf",
+                    "fontStyle": 1,
+                    "textSize": 7.2,
+                    "alpha": 1,
+                    "gradientType": -1,
+                    "colors": [
+                      "#000000"
+                    ]
+                  },
+                  "position": {
+                    "layoutGravity": "verticalCenter",
+                    "layoutGravityEnable": true,
+                    "leftMargin": 6.6,
+                    "topMargin": 0,
+                    "rightMargin": 0,
+                    "bottomMargin": 0
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

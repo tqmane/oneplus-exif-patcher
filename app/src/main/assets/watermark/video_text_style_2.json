@@ -1,0 +1,264 @@
+{
+  "styleId": "video_text_style_2",
+  "baseImageSize": 360,
+  "size": {
+    "leftMargin": 0,
+    "topMargin": 0,
+    "rightMargin": 0,
+    "bottomMargin": 0
+  },
+  "imageOffset": {
+    "startX": 0,
+    "startY": 0
+  },
+  "bitmaps": [
+    {
+      "direction": 4,
+      "orientation": 1,
+      "position": {
+        "borderX": 20,
+        "borderY": 20,
+        "gravity": "center"
+      },
+      "composite": {
+        "textSize": 1,
+        "position": 3
+      },
+      "width": -1,
+      "height": 60,
+      "elements": [
+        {
+          "id": 21,
+          "visible": true,
+          "editable": true,
+          "spaceUse": "bottomAlign",
+          "content": {
+            "type": "space"
+          },
+          "layoutWeight": 1
+        },
+        {
+          "id": 1,
+          "varyGravity": true,
+          "visible": false,
+          "editable": true,
+          "content": {
+            "type": "image",
+            "bitmapSourceType": 0,
+            "bitmap": "classic_double_reverse2",
+            "bitmapResName": "classic_double_reverse2",
+            "width": 28,
+            "height": 28,
+            "scaleType": 3
+          },
+          "position": {
+            "layoutGravity": "topHorCenter",
+            "layoutGravityEnable": true,
+            "leftMargin": 0,
+            "bottomMargin": 3
+          }
+        },
+        {
+          "id": 2,
+          "varyGravity": true,
+          "visible": true,
+          "editable": false,
+          "content": {
+            "type": "text",
+            "textSource": 0
+          },
+          "paint": {
+            "fontType": 0,
+            "fontName": "OplusSans",
+            "font": "/system/fonts/SysSans-En-Regular.ttf",
+            "fontFileType": 1,
+            "textSize": 10,
+            "fontWeight": 600,
+            "letterSpacing": 0.03,
+            "lineHeight": 11.72,
+            "alpha": 1,
+            "colors": ["#FFFFFF"],
+            "gradientType": -1,
+            "withShadow": true,
+            "shadowValues": [1,0,0.33],
+            "shadowColor": "#65000000"
+          },
+          "position": {
+            "layoutGravity": "horCenter",
+            "layoutGravityEnable": true,
+            "topMargin": 0,
+            "bottomMargin": 1.8
+          }
+        },
+        {
+          "id": 3,
+          "varyGravity": true,
+          "content": {
+            "type": "elements",
+            "orientation": 0
+          },
+          "position": {
+            "layoutGravity": "horCenter",
+            "layoutGravityEnable": true,
+            "topMargin": 0
+          },
+          "elements": [
+            {
+              "id": 4,
+              "affinityId": 5,
+              "editable": true,
+              "visible": true,
+              "content": {
+                "type": "text",
+                "textSource": 4
+              },
+              "paint": {
+                "fontType": 0,
+                "fontName": "OplusSans",
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "textSize": 8,
+                "letterSpacing": 0,
+                "lineHeight": 9.38,
+                "fontWeight": 600,
+                "alpha": 1,
+                "colors": ["#FFFFFF"],
+                "gradientType": -1,
+                "withShadow": true,
+                "shadowValues": [1,0,0.33],
+                "shadowColor": "#65000000"
+              },
+              "position": {
+                "layoutGravity": "verticalCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 0
+              }
+            },
+            {
+              "id": 5,
+              "visible": true,
+              "editable": false,
+              "possibleNextIds": [6,8],
+              "possiblePreviousIds": [4],
+              "content": {
+                "type": "shape",
+                "shape": "rectangle",
+                "width": 0.5,
+                "height": 7
+              },
+              "paint": {
+                "colors": ["#E5FFFFFF"],
+                "lightColor": "#E5FFFFFF",
+                "darkColor": "#E5000000",
+                "gradientType": -1,
+                "withShadow": true,
+                "shadowValues": [1,0,0.33],
+                "shadowColor": "#65000000"
+              },
+              "position": {
+                "layoutGravity": "verticalCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 4.51,
+                "rightMargin": 4.45,
+                "topMargin": 0.5
+              }
+            },
+            {
+              "id": 6,
+              "affinityId": 7,
+              "editable": true,
+              "visible": true,
+              "content": {
+                "type": "text",
+                "textSource": 3
+              },
+              "paint": {
+                "fontType": 0,
+                "fontName": "OplusSans",
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "textSize": 8,
+                "letterSpacing": 0,
+                "lineHeight": 9.38,
+                "fontWeight": 600,
+                "alpha": 1,
+                "colors": ["#FFFFFF"],
+                "gradientType": -1,
+                "withShadow": true,
+                "shadowValues": [1,0,0.33],
+                "shadowColor": "#65000000"
+              },
+              "position": {
+                "layoutGravity": "verticalCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 0
+              }
+            },
+            {
+              "id": 7,
+              "editable": false,
+              "visible": false,
+              "possibleNextIds": [8],
+              "possiblePreviousIds": [6],
+              "content": {
+                "type": "shape",
+                "shape": "rectangle",
+                "width": 0.5,
+                "height": 7
+              },
+              "paint": {
+                "shape": "rectangle",
+                "width": 0.5,
+                "height": 7,
+                "colors": ["#E5FFFFFF"],
+                "lightColor": "#E5FFFFFF",
+                "darkColor": "#E5000000",
+                "gradientType": -1,
+                "withShadow": true,
+                "shadowValues": [1,0,0.33],
+                "shadowColor": "#65000000"
+              },
+              "position": {
+                "layoutGravity": "verticalCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 4.51,
+                "rightMargin": 4.45
+              }
+            },
+            {
+              "id": 8,
+              "affinityId": 7,
+              "editable": true,
+              "visible": false,
+              "content": {
+                "type": "text",
+                "textSource": -1
+              },
+              "paint": {
+                "fontType": 0,
+                "fontName": "OplusSans",
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "textSize": 8,
+                "fontWeight": 600,
+                "letterSpacing": 0,
+                "lineHeight": 9.38,
+                "alpha": 1,
+                "colors": ["#FFFFFF"],
+                "gradientType": -1,
+                "withShadow": true,
+                "shadowValues": [1,0,0.33],
+                "shadowColor": "#65000000"
+              },
+              "position": {
+                "layoutGravity": "verticalCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 0
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

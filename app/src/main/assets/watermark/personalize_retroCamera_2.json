@@ -1,0 +1,201 @@
+{
+  "styleId": "personalize_retroCamera_2",
+  "baseImageSize": 360,
+  "size": {
+    "leftMargin": 10,
+    "topMargin": 10,
+    "rightMargin": 10,
+    "bottomMargin": 95
+  },
+  "imageOffset": {
+    "startX": 10,
+    "startY": 10
+  },
+  "background": {
+    "backgroundType": 0,
+    "color": "#FFFFFF"
+  },
+  "bitmaps": [
+    {
+      "direction": 3,
+      "orientation": 0,
+      "position": {
+        "borderX": 10,
+        "borderY": 0,
+        "gravity": "center"
+      },
+      "width": -1,
+      "height": 95,
+      "elements": [
+        {
+          "id": 1,
+          "content": {
+            "type": "elements",
+            "orientation": 0
+          },
+          "position": {
+            "layoutGravity": "center",
+            "layoutGravityEnable": true,
+            "leftMargin": 0,
+            "rightMargin": 0,
+            "topMargin": 0,
+            "bottomMargin": 0
+          },
+          "elements": [
+            {
+              "id": 2,
+              "content": {
+                "type": "elements",
+                "orientation": 1,
+                "width": 239
+              },
+              "position": {
+                "layoutGravity": "leftVerticalCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 10,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              },
+              "elements": [
+                {
+                  "id": 3,
+                  "visible": true,
+                  "editable": false,
+                  "content": {
+                    "type": "text",
+                    "textSource": 0
+                  },
+                  "position": {
+                    "layoutGravity": "leftTop",
+                    "layoutGravityEnable": true,
+                    "leftMargin": 0,
+                    "topMargin": 0,
+                    "rightMargin": 0,
+                    "bottomMargin": 0
+                  },
+                  "paint": {
+                    "fontType": 2,
+                    "fontName": "BulterBold.zip",
+                    "fontFileType": 2,
+                    "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/07/4e27ea19-962b-4930-85f9-80f53252125a.zip",
+                    "md5": "802a846b2d2a7ce41a8db0b6f103fa75",
+                    "fontWeight": 700,
+                    "textSize": 12,
+                    "letterSpacing": 0.04,
+                    "lineHeight": 14.4,
+                    "alpha": 1,
+                    "gradientType": -1,
+                    "colors": [
+                      "#000000"
+                    ]
+                  }
+                },
+                {
+                  "id": 4,
+                  "visible": true,
+                  "editable": true,
+                  "content": {
+                    "type": "text",
+                    "textSource": 1
+                  },
+                  "position": {
+                    "layoutGravity": "leftTop",
+                    "layoutGravityEnable": true,
+                    "leftMargin": 0,
+                    "topMargin": 4,
+                    "rightMargin": 0,
+                    "bottomMargin": 0
+                  },
+                  "paint": {
+                    "fontType": 2,
+                    "fontName": "FZYaSongDB1GBK.zip",
+                    "fontFileType": 1,
+                    "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/77ad308d-dd6d-4a43-b24d-c634a56d5565.zip",
+                    "md5": "e70a912839b253cf406efcb41cdd5739",
+                    "fontWeight": 400,
+                    "textSize": 7,
+                    "letterSpacing": 0.06,
+                    "lineHeight": 8.6,
+                    "alpha": 0.54,
+                    "lightAlpha": 0.54,
+                    "gradientType": -1,
+                    "colors": [
+                      "#000000"
+                    ]
+                  }
+                },
+                {
+                  "id": 5,
+                  "visible": true,
+                  "editable": true,
+                  "content": {
+                    "type": "text",
+                    "textSource": 3
+                  },
+                  "position": {
+                    "layoutGravity": "leftTop",
+                    "layoutGravityEnable": true,
+                    "leftMargin": 0,
+                    "topMargin": 4,
+                    "rightMargin": 0,
+                    "bottomMargin": 0
+                  },
+                  "paint": {
+                    "fontType": 2,
+                    "fontName": "FZYaSongDB1GBK.zip",
+                    "fontFileType": 1,
+                    "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/77ad308d-dd6d-4a43-b24d-c634a56d5565.zip",
+                    "md5": "e70a912839b253cf406efcb41cdd5739",
+                    "fontWeight": 400,
+                    "textSize": 7,
+                    "letterSpacing": 0.06,
+                    "lineHeight": 8.6,
+                    "alpha": 0.54,
+                    "lightAlpha": 0.54,
+                    "gradientType": -1,
+                    "colors": [
+                      "#000000"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": 6,
+              "visible": true,
+              "editable": false,
+              "spaceUse": "occupy",
+              "content": {
+                "type": "space"
+              },
+              "layoutWeight": 1
+            },
+            {
+              "id": 7,
+              "visible": true,
+              "editable": true,
+              "content": {
+                "type": "image",
+                "bitmapSourceType": 0,
+                "bitmap": "classic_135_camera_dark",
+                "bitmapResName": "classic_135_camera_dark",
+                "width": 85,
+                "height": 40,
+                "scaleType": 5
+              },
+              "position": {
+                "layoutGravity": "rightVerticalCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "topMargin": 0,
+                "rightMargin": 6,
+                "bottomMargin": 0
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

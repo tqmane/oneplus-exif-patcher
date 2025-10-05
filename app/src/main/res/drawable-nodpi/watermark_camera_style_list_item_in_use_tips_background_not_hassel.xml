@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <gradient
+                android:startColor="#99ffe9b7"
+                android:endColor="#99ffb201"
+                android:angle="107.45"/>
+            <corners android:radius="@dimen/picture3d_editor_watermark_camera_style_list_item_apply_tips_bg_corner"/>
+        </shape>
+    </item>
+    <item
+        android:left="@dimen/picture3d_editor_watermark_camera_style_list_item_apply_tips_bg_border"
+        android:top="@dimen/picture3d_editor_watermark_camera_style_list_item_apply_tips_bg_border"
+        android:right="@dimen/picture3d_editor_watermark_camera_style_list_item_apply_tips_bg_border"
+        android:bottom="@dimen/picture3d_editor_watermark_camera_style_list_item_apply_tips_bg_border">
+        <shape>
+            <gradient
+                android:startColor="#ffc234"
+                android:endColor="#ffb200"
+                android:angle="105.53"/>
+            <corners android:radius="@dimen/picture3d_editor_watermark_camera_style_list_item_apply_tips_bg_inner_corner"/>
+        </shape>
+    </item>
+</layer-list>

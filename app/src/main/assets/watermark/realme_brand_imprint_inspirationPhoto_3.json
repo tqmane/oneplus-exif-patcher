@@ -1,0 +1,156 @@
+{
+  "styleId": "realme_brand_imprint_inspirationPhoto_3",
+  "baseImageSize": 360,
+  "version": 1,
+  "size": {
+    "leftMargin": 0,
+    "topMargin": 0,
+    "rightMargin": 0,
+    "bottomMargin": 60
+  },
+  "imageOffset": {
+    "startX": 0,
+    "startY": 0
+  },
+  "background": {
+    "backgroundType": 0,
+    "color": "#FFFFFF"
+  },
+  "bitmaps": [
+    {
+      "direction": 3,
+      "orientation": 0,
+      "position": {
+        "borderX": 0,
+        "borderY": 0
+      },
+      "width": -1,
+      "height": 60,
+      "elements": [
+        {
+          "id": 1,
+          "content": {
+            "type": "elements",
+            "orientation": 0
+          },
+          "position": {
+            "layoutGravity": "leftVerticalCenter",
+            "layoutGravityEnable": true,
+            "leftMargin": 20,
+            "topMargin": 0,
+            "rightMargin": 0,
+            "bottomMargin": 0
+          },
+          "elements": [
+            {
+              "id": 2,
+              "visible": true,
+              "editable": false,
+              "content": {
+                "type": "text",
+                "textSource": 0
+              },
+              "position": {
+                "layoutGravity": "leftVerticalCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              },
+              "paint": {
+                "fontType": 0,
+                "fontName": "OplusSans",
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "fontWeight": 600,
+                "textSize": 8,
+                "letterSpacing": 0.04,
+                "lineHeight": 9.38,
+                "alpha": 0.54,
+                "gradientType": -1,
+                "colors": [
+                  "#000000"
+                ]
+              }
+            },
+            {
+              "id": 3,
+              "visible": true,
+              "editable": true,
+              "content": {
+                "type": "text",
+                "textSource": 1,
+                "maxWidth": 150
+              },
+              "position": {
+                "layoutGravity": "verticalCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 12,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "bottomMargin": 0
+              },
+              "paint": {
+                "fontType": 0,
+                "fontName": "OplusSans",
+                "font": "/system/fonts/SysSans-En-Regular.ttf",
+                "fontFileType": 1,
+                "fontWeight": 500,
+                "textSize": 8,
+                "letterSpacing": 0.03,
+                "lineHeight": 9.38,
+                "alpha": 0.54,
+                "gradientType": -1,
+                "colors": [
+                  "#000000"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "visible": true,
+          "editable": false,
+          "spaceUse": "occupy",
+          "content": {
+            "type": "space"
+          },
+          "layoutWeight": 1
+        },
+        {
+          "id": 5,
+          "visible": true,
+          "editable": true,
+          "content": {
+            "type": "image",
+            "bitmapSourceType": 4,
+            "bitmap": "color_card_explore",
+            "bitmapResName": "color_card_explore",
+            "width": 62,
+            "height": 12,
+            "scaleType": 5,
+            "colorCard": {
+              "colorX": 23,
+              "colorY": 24,
+              "colorType": 2,
+              "colorDistance": 5,
+              "colorCount": 5,
+              "colorRadius": 6,
+              "colorBlurScope": 3
+            }
+          },
+          "position": {
+            "layoutGravity": "rightTop",
+            "layoutGravityEnable": true,
+            "rightMargin": 23,
+            "bottomMargin": 0,
+            "leftMargin": 0,
+            "topMargin": 24
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "styleId": "hassel_style_3",
+  "baseImageSize": 360,
+  "size": {
+    "leftMargin": 10,
+    "topMargin": 10,
+    "rightMargin": 10,
+    "bottomMargin": 111
+  },
+  "imageOffset": {
+    "startX": 10,
+    "startY": 10
+  },
+  "background": {
+    "backgroundType": 0,
+    "color": "#FFFFFF"
+  },
+  "bitmaps": [
+    {
+      "direction": 3,
+      "orientation": 1,
+      "position": {
+        "borderX": 10,
+        "borderY": 0,
+        "gravity": "center"
+      },
+      "width": -1,
+      "height": 111,
+      "elements": [
+        {
+          "id": 1,
+          "visible": true,
+          "content": {
+            "type": "elements",
+            "orientation": 1,
+            "width": 340
+          },
+          "position": {
+            "layoutGravity": "center",
+            "layoutGravityEnable": true,
+            "leftMargin": 0,
+            "topMargin": 0,
+            "rightMargin": 0,
+            "bottomMargin": 0
+          },
+          "elements": [
+            {
+              "id": 2,
+              "visible": true,
+              "editable": false,
+              "content": {
+                "type": "image",
+                "bitmapSourceType": 0,
+                "bitmap": "hassel_watermark_h_logo_dark",
+                "bitmapResName": "hassel_watermark_h_logo_dark",
+                "width": 36,
+                "height": 36,
+                "scaleType": 2
+              },
+              "position": {
+                "layoutGravity": "horCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "rightMargin": 0,
+                "topMargin": 0,
+                "bottomMargin": 0
+              }
+            },
+            {
+              "id": 3,
+              "visible": true,
+              "editable": false,
+              "content" : {
+                "type": "text",
+                "textSource": 0
+              },
+              "position": {
+                "layoutGravity": "horCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "rightMargin": 0,
+                "topMargin": 4,
+                "bottomMargin": 0
+              },
+              "paint": {
+                "fontType": 2,
+                "fontName":"AvenirNext.zip",
+                "fontFileType": 0,
+                "ttcIndex": 5,
+                "fontWeight": 500,
+                "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                "md5": "33ca1145fa326691413fa356abb82753",
+                "textSize": 11.6,
+                "letterSpacing": 0,
+                "lineHeight": 15.85,
+                "alpha": 1,
+                "gradientType": -1,
+                "colors": [
+                  "#000000"
+                ]
+              }
+            },
+            {
+              "id": 4,
+              "visible": true,
+              "editable": true,
+              "content" : {
+                "type": "text",
+                "textSource": 1
+              },
+              "position": {
+                "layoutGravity": "horCenter",
+                "layoutGravityEnable": true,
+                "leftMargin": 0,
+                "rightMargin": 0,
+                "topMargin": 1,
+                "bottomMargin": 0
+              },
+              "paint": {
+                "fontType": 2,
+                "fontName":"AvenirNext.zip",
+                "fontFileType": 0,
+                "ttcIndex": 7,
+                "fontWeight": 400,
+                "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/d0f56219-1be1-41b5-84ca-847857d8bff3.zip",
+                "md5": "33ca1145fa326691413fa356abb82753",
+                "textSize": 10,
+                "letterSpacing": 0,
+                "lineHeight": 13.66,
+                "alpha": 0.65,
+                "lightAlpha": 0.65,
+                "gradientType": -1,
+                "colors": [
+                  "#000000"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "styleId": "personalize_retroCamera_1",
+  "baseImageSize": 360,
+  "size": {
+    "leftMargin": 10,
+    "topMargin": 10,
+    "rightMargin": 10,
+    "bottomMargin": 111
+  },
+  "imageOffset": {
+    "startX": 10,
+    "startY": 10
+  },
+  "background": {
+    "backgroundType": 0,
+    "color": "#FFFFFF"
+  },
+  "bitmaps": [
+    {
+      "direction": 3,
+      "orientation": 1,
+      "position": {
+        "borderX": 10,
+        "borderY": 0,
+        "gravity": "center"
+      },
+      "width": -1,
+      "height": 111,
+      "elements": [
+        {
+          "id": 1,
+          "visible": true,
+          "content": {
+            "type": "elements",
+            "orientation": 1,
+            "width": 340
+          },
+          "elements": [
+            {
+              "id": 2,
+              "visible": true,
+              "editable": true,
+              "content": {
+                "type": "image",
+                "bitmapSourceType": 0,
+                "bitmap": "classic_double_reverse1_dark",
+                "bitmapResName": "classic_double_reverse1_dark",
+                "width": 156,
+                "height": 40,
+                "scaleType": 3
+              },
+              "position": {
+                "layoutGravity": "horCenter",
+                "layoutGravityEnable": true,
+                "bottomMargin": 6.5
+              }
+            },
+            {
+              "id": 3,
+              "visible": true,
+              "editable": false,
+              "content": {
+                "type": "text",
+                "textSource": 0
+              },
+              "paint": {
+                "fontType": 2,
+                "fontName": "BulterBold.zip",
+                "fontFileType": 2,
+                "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/07/4e27ea19-962b-4930-85f9-80f53252125a.zip",
+                "md5": "802a846b2d2a7ce41a8db0b6f103fa75",
+                "textSize": 10.5,
+                "withLogoTextSize": 10.5,
+                "noLogoTextSize": 12,
+                "fontWeight": 700,
+                "letterSpacing": 0.04,
+                "lineHeight": 12.6,
+                "alpha": 0.9,
+                "lightAlpha": 0.9,
+                "colors": ["#000000"],
+                "gradientType": -1
+              },
+              "position": {
+                "layoutGravity": "horCenter",
+                "layoutGravityEnable": true,
+                "topMargin": 0,
+                "bottomMargin": 3,
+                "withLogoBottomMargin": 3,
+                "noLogoBottomMargin": 5
+              }
+            },
+            {
+              "id": 4,
+              "visible": true,
+              "editable": true,
+              "content": {
+                "type": "text",
+                "textSource": 1
+              },
+              "paint": {
+                "fontType": 2,
+                "fontName": "FZYaSongDB1GBK.zip",
+                "fontFileType": 1,
+                "font": "https://videoclipfsg.coloros.com/dirfile/icon/2024/11/06/77ad308d-dd6d-4a43-b24d-c634a56d5565.zip",
+                "md5": "e70a912839b253cf406efcb41cdd5739",
+                "textSize": 7,
+                "letterSpacing": 0.06,
+                "lineHeight": 8.6,
+                "fontWeight": 400,
+                "alpha": 0.54,
+                "lightAlpha": 0.54,
+                "colors": ["#000000"],
+                "gradientType": -1
+              },
+              "position": {
+                "layoutGravity": "horCenter",
+                "layoutGravityEnable": true,
+                "topMargin": 0
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
