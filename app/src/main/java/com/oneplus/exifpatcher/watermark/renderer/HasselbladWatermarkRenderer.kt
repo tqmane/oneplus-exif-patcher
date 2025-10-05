@@ -79,7 +79,7 @@ class HasselbladWatermarkRenderer(private val context: Context) {
 
         if (bottomMargin > 0) {
             val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                style = Paint.Style.FILL
+                this.style = Paint.Style.FILL
                 color = Color.WHITE
             }
             canvas.drawRect(
