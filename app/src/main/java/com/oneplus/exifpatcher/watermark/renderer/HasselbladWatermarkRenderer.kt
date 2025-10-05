@@ -68,13 +68,14 @@ class HasselbladWatermarkRenderer(private val context: Context) {
         
         // スケール計算（スタイル定義は固定サイズなので画像サイズに合わせる）
         val scale = calculateScale(resultBitmap.width, resultBitmap.height, style)
+        val (originX, originY) = calculateOrigin(resultBitmap.width, resultBitmap.height, style, scale)
         
         // 各要素を描画
         for (element in style.elements) {
             when (element.type) {
-                "text" -> renderText(canvas, element, cameraInfo, scale)
-                "image" -> renderImage(canvas, element, scale)
-                "shape" -> renderShape(canvas, element, scale)
+                "text" -> renderText(canvas, element, cameraInfo, scale, originX, originY)
+                "image" -> renderImage(canvas, element, scale, originX, originY)
+                "shape" -> renderShape(canvas, element, scale, originX, originY)
             }
         }
         
@@ -92,6 +93,30 @@ class HasselbladWatermarkRenderer(private val context: Context) {
         // ウォーターマークサイズは画像の10%程度に調整
         return (baseSize * 0.1f) / styleBaseSize
     }
+
+    private fun calculateOrigin(
+        imageWidth: Int,
+        imageHeight: Int,
+        style: WatermarkStyle,
+        scale: Float
+    ): Pair<Float, Float> {
+        val watermarkWidth = style.width * scale
+        val watermarkHeight = style.height * scale
+        val margin = minOf(imageWidth, imageHeight) * 0.04f
+
+        val clampedWidth = watermarkWidth.coerceAtMost(imageWidth - margin * 2f)
+        val clampedHeight = watermarkHeight.coerceAtMost(imageHeight - margin * 2f)
+
+        val originX = when (style.orientation) {
+            1 -> imageWidth - margin - clampedWidth
+            else -> margin
+        }.coerceIn(margin, imageWidth - margin - clampedWidth)
+
+        val originY = (imageHeight - margin - clampedHeight)
+            .coerceIn(margin, imageHeight - margin - clampedHeight)
+
+        return originX to originY
+    }
     
     /**
      * テキスト要素を描画
@@ -100,7 +125,9 @@ class HasselbladWatermarkRenderer(private val context: Context) {
         canvas: Canvas,
         element: WatermarkElement,
         cameraInfo: CameraInfo,
-        scale: Float
+        scale: Float,
+        originX: Float,
+        originY: Float
     ) {
         // テキスト内容を決定
         val text = when (element.textSource) {
@@ -122,8 +149,8 @@ class HasselbladWatermarkRenderer(private val context: Context) {
         paint.textAlign = parseTextAlign(element.textAlign)
         
         // 位置計算
-        val x = element.x * scale
-        val y = element.y * scale + paint.textSize  // ベースライン調整
+        val x = originX + element.x * scale
+        val y = originY + element.y * scale + paint.textSize  // ベースライン調整
         
         // 描画
         canvas.drawText(text, x, y, paint)
@@ -135,17 +162,19 @@ class HasselbladWatermarkRenderer(private val context: Context) {
     private fun renderImage(
         canvas: Canvas,
         element: WatermarkElement,
-        scale: Float
+        scale: Float,
+        originX: Float,
+        originY: Float
     ) {
         val bitmap = loadBitmap(element.bitmap ?: return) ?: return
         
         // 位置とサイズ計算
         val srcRect = Rect(0, 0, bitmap.width, bitmap.height)
         val dstRect = RectF(
-            element.x * scale,
-            element.y * scale,
-            (element.x + element.width) * scale,
-            (element.y + element.height) * scale
+            originX + element.x * scale,
+            originY + element.y * scale,
+            originX + (element.x + element.width) * scale,
+            originY + (element.y + element.height) * scale
         )
         
         // ペイント設定
@@ -174,14 +203,16 @@ class HasselbladWatermarkRenderer(private val context: Context) {
     private fun renderShape(
         canvas: Canvas,
         element: WatermarkElement,
-        scale: Float
+        scale: Float,
+        originX: Float,
+        originY: Float
     ) {
         // 位置とサイズ計算
         val rect = RectF(
-            element.x * scale,
-            element.y * scale,
-            (element.x + element.width) * scale,
-            (element.y + element.height) * scale
+            originX + element.x * scale,
+            originY + element.y * scale,
+            originX + (element.x + element.width) * scale,
+            originY + (element.y + element.height) * scale
         )
         
         // 塗りつぶし

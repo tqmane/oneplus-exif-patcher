@@ -23,6 +23,8 @@ OnePlus EXIF Patcherは、画像のEXIFメタデータにOnePlus固有の情報�
 - ✅ **バックグラウンド処理** - 進捗表示付きの非同期処理
 - ✅ **クリーンなアーキテクチャ** - MVVM パターンを採用
 - 🔬 **Hasselblad透かし機能の調査完了** - [詳細はこちら](#hasselblad透かし機能)
+- 👀 **透かしプレビュー** - 選択したスタイルをその場でプレビューして仕上がりを確認
+  - 透かしは自動的に画像下部へマージン付きでレイアウトされ、実機と近い見た目を再現
 
 ### 🎨 Hasselblad透かし機能
 
@@ -86,6 +88,7 @@ app/
 3. **「保存先を選択」ボタンをタップ** - 処理済み画像を保存するフォルダを選択
 4. **「画像を処理」ボタンをタップ** - 処理が開始されます
 5. **完了を待つ** - 進捗バーで処理状況を確認できます
+6. （任意）**透かしプレビューを確認** - スタイルを変更するとプレビューが即座に更新されます
 
 ### 🛠️ ビルド方法
 
@@ -172,6 +175,8 @@ OnePlus EXIF Patcher is an Android application that automatically adds OnePlus-s
 - ✅ **Destination Selection** - Users can choose where to save processed images
 - ✅ **Background Processing** - Asynchronous processing with progress display
 - ✅ **Clean Architecture** - MVVM pattern implementation
+- 👀 **Live Watermark Preview** - Instantly visualize the selected watermark style before processing
+  - Watermarks are anchored near the bottom edge with a soft margin to resemble the OEM layout
 
 ### 📋 Requirements
 

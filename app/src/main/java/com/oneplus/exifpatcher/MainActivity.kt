@@ -1,6 +1,7 @@
 package com.oneplus.exifpatcher
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,19 +9,26 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oneplus.exifpatcher.ui.theme.OnePlusExifPatcherTheme
@@ -448,6 +456,14 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    WatermarkPreviewSection(
+                        previewBitmap = uiState.previewBitmap,
+                        isLoading = uiState.isPreviewLoading,
+                        errorMessage = uiState.previewErrorMessage,
+                        selectedStyle = uiState.selectedWatermarkStyle
+                    )
                 }
             }
             
@@ -527,6 +543,86 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun WatermarkPreviewSection(
+    previewBitmap: Bitmap?,
+    isLoading: Boolean,
+    errorMessage: String?,
+    selectedStyle: String?,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = "プレビュー",
+            style = MaterialTheme.typography.titleSmall
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(4f / 3f)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            when {
+                isLoading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+
+                previewBitmap != null -> {
+                    Image(
+                        bitmap = previewBitmap.asImageBitmap(),
+                        contentDescription = "透かしプレビュー",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                errorMessage != null -> {
+                    Text(
+                        text = errorMessage,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                else -> {
+                    Text(
+                        text = "スタイルを選択するとプレビューが表示されます",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            val label = selectedStyle ?: "なし"
+            Text(
+                text = "スタイル: $label",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(12.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            )
         }
     }
 }

@@ -38,6 +38,7 @@
 - フォントウェイト（数値／`bold`）に応じて Bold 用アセットへ切り替えるロジックを追加。
 - `systemFontAliasMap` 経由で `OplusSans` などは Android システムフォントにフォールバック。
 - `Typeface` のキャッシュキーを正規化済み文字列＋スタイルで構成し、描画コストを削減。
+- `calculateOrigin` で描画開始位置を算出し、透かし全体を画像下部に 4% マージンを空けて配置するよう調整。
 
 ### パーサー／モデル
 - `WatermarkStyleParser` のレガシー JSON 変換でテキスト要素の `fontFamily` がそのまま保持されるため、レンダラー側で alias を解決するだけで十分でした。

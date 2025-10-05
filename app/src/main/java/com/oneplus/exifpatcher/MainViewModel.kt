@@ -1,15 +1,28 @@
 package com.oneplus.exifpatcher
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.Shader
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.oneplus.exifpatcher.data.ImageRepository
 import com.oneplus.exifpatcher.data.PresetRepository
+import com.oneplus.exifpatcher.watermark.HasselbladWatermarkManager
+import com.oneplus.exifpatcher.watermark.model.CameraInfo
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 
 /**
@@ -25,7 +38,10 @@ data class MainUiState(
     val isProcessing: Boolean = false,
     val processingProgress: Pair<Int, Int>? = null,
     val successMessage: String? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val previewBitmap: Bitmap? = null,
+    val isPreviewLoading: Boolean = false,
+    val previewErrorMessage: String? = null
 )
 
 /**
@@ -36,6 +52,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = ImageRepository(application)
     private val presetRepository = PresetRepository(application)
     private val context = application.applicationContext
+    private val watermarkManager = HasselbladWatermarkManager(application)
+    private val basePreviewCameraInfo = CameraInfo(
+        aperture = "f/1.8",
+        shutterSpeed = "1/125",
+        iso = "ISO200",
+        focalLength = "24mm",
+        deviceName = "OnePlus 12"
+    )
+    private var previewJob: Job? = null
     
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -50,6 +75,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         
         // Load last used destination URI
         loadLastDestinationUri()
+
+        // 初期プレビューを生成
+        refreshPreview()
     }
     
     /**
@@ -101,6 +129,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun setCustomModelName(name: String) {
         _uiState.update { it.copy(customModelName = name, errorMessage = null) }
+        refreshPreview()
     }
     
     /**
@@ -192,6 +221,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun setWatermarkStyle(styleId: String?) {
         _uiState.update { it.copy(selectedWatermarkStyle = styleId, errorMessage = null) }
+        refreshPreview()
     }
     
     /**
@@ -200,4 +230,126 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setWatermarkCategory(category: String) {
         _uiState.update { it.copy(watermarkCategory = category) }
     }
+
+    private fun refreshPreview() {
+        val currentState = _uiState.value
+        val deviceName = currentState.customModelName.takeIf { it.isNotBlank() }
+        val styleId = currentState.selectedWatermarkStyle
+
+        previewJob?.cancel()
+        _uiState.update { it.copy(isPreviewLoading = true, previewErrorMessage = null) }
+
+        previewJob = viewModelScope.launch(Dispatchers.Default) {
+            var generatedBitmap: Bitmap? = null
+            try {
+                generatedBitmap = generatePreviewBitmap(styleId, deviceName)
+                ensureActive()
+                val previewBitmap = generatedBitmap
+                _uiState.update {
+                    it.copy(
+                        isPreviewLoading = false,
+                        previewBitmap = previewBitmap,
+                        previewErrorMessage = null
+                    )
+                }
+                generatedBitmap = null
+            } catch (c: CancellationException) {
+                generatedBitmap?.takeIf { !it.isRecycled }?.recycle()
+                generatedBitmap = null
+                throw c
+            } catch (t: Throwable) {
+                generatedBitmap?.takeIf { !it.isRecycled }?.recycle()
+                _uiState.update {
+                    it.copy(
+                        isPreviewLoading = false,
+                        previewBitmap = null,
+                        previewErrorMessage = t.localizedMessage ?: "透かしプレビューを生成できませんでした"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun generatePreviewBitmap(styleId: String?, deviceName: String?): Bitmap {
+        val baseBitmap = createPreviewBackgroundBitmap()
+        val cameraInfo = basePreviewCameraInfo.copy(
+            deviceName = deviceName ?: basePreviewCameraInfo.deviceName
+        )
+
+        if (styleId.isNullOrBlank()) {
+            return baseBitmap
+        }
+
+        val rendered = watermarkManager.addWatermark(baseBitmap, cameraInfo, styleId)
+        if (!baseBitmap.isRecycled) {
+            baseBitmap.recycle()
+        }
+        return rendered
+    }
+}
+
+private fun createPreviewBackgroundBitmap(
+    width: Int = 1600,
+    height: Int = 1200
+): Bitmap {
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+
+    val gradientPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        shader = LinearGradient(
+            0f,
+            0f,
+            0f,
+            height.toFloat(),
+            Color.parseColor("#0F172A"),
+            Color.parseColor("#020617"),
+            Shader.TileMode.CLAMP
+        )
+    }
+    canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), gradientPaint)
+
+    val accentPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#2563EB")
+        alpha = 96
+    }
+    val ridgePath = Path().apply {
+        moveTo(0f, height * 0.72f)
+        lineTo(width * 0.35f, height * 0.58f)
+        lineTo(width * 0.68f, height * 0.72f)
+        lineTo(width.toFloat(), height * 0.62f)
+        lineTo(width.toFloat(), height.toFloat())
+        lineTo(0f, height.toFloat())
+        close()
+    }
+    canvas.drawPath(ridgePath, accentPaint)
+
+    accentPaint.color = Color.parseColor("#34D399")
+    accentPaint.alpha = 70
+    val foregroundPath = Path().apply {
+        moveTo(0f, height * 0.86f)
+        lineTo(width * 0.25f, height * 0.74f)
+        lineTo(width * 0.52f, height * 0.88f)
+        lineTo(width * 0.85f, height * 0.78f)
+        lineTo(width.toFloat(), height * 0.9f)
+        lineTo(width.toFloat(), height.toFloat())
+        lineTo(0f, height.toFloat())
+        close()
+    }
+    canvas.drawPath(foregroundPath, accentPaint)
+
+    val sunPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#FACC15")
+        alpha = 160
+    }
+    canvas.drawCircle(width * 0.78f, height * 0.28f, height * 0.12f, sunPaint)
+
+    val hazePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        alpha = 36
+    }
+    canvas.drawCircle(width * 0.28f, height * 0.32f, height * 0.2f, hazePaint)
+    hazePaint.alpha = 24
+    canvas.drawRect(0f, height * 0.9f, width.toFloat(), height.toFloat(), hazePaint)
+
+    return bitmap
 }
