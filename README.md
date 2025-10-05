@@ -65,17 +65,37 @@ app/
 
 ### 🛠️ ビルド方法
 
+#### 簡単なビルド（推奨）
+
+**Windows:**
+```cmd
+build.bat
+```
+
+**Linux/macOS:**
+```bash
+chmod +x build.sh
+./build.sh
+```
+
+#### 詳細なビルド手順
+
 ```bash
 # リポジトリをクローン
 git clone https://github.com/tqmane/oneplus-exif-patcher.git
 cd oneplus-exif-patcher
 
-# プロジェクトをビルド
-./gradlew build
+# デバッグ版ビルド
+./gradlew assembleDebug
+
+# リリース版ビルド（署名設定が必要）
+./gradlew assembleRelease
 
 # APKをインストール
 ./gradlew installDebug
 ```
+
+**📝 署名とリリースビルドの詳細**: [BUILD_AND_SIGNING.md](BUILD_AND_SIGNING.md) を参照してください。
 
 ### 📱 技術スタック
 
