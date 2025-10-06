@@ -77,7 +77,7 @@ class HasselbladWatermarkRenderer(private val context: Context) {
         if (bandHeight > 0) {
             val bandTop = sourceBitmap.height.toFloat()
             val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                style = Paint.Style.FILL
+                this.style = Paint.Style.FILL
                 color = bandColor
             }
             canvas.drawRect(0f, bandTop, resultBitmap.width.toFloat(), resultBitmap.height.toFloat(), backgroundPaint)
