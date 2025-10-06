@@ -268,6 +268,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                             uiState.modelPresets.forEach { preset ->
                                 Box(
                                     modifier = Modifier.combinedClickable(
+                                        enabled = !uiState.isProcessing,
                                         onClick = {
                                             viewModel.setCustomModelName(preset)
                                             showAddButton = false
@@ -279,7 +280,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                                 ) {
                                     FilterChip(
                                         selected = uiState.customModelName == preset,
-                                        onClick = { /* handled by parent Box */ },
+                                        onClick = {},
                                         label = { Text(preset) },
                                         enabled = !uiState.isProcessing
                                     )
