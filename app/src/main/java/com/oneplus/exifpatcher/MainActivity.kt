@@ -266,14 +266,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             uiState.modelPresets.forEach { preset ->
-                                FilterChip(
-                                    selected = uiState.customModelName == preset,
-                                    onClick = {
-                                        viewModel.setCustomModelName(preset)
-                                        showAddButton = false
-                                    },
-                                    label = { Text(preset) },
-                                    enabled = !uiState.isProcessing,
+                                Box(
                                     modifier = Modifier.combinedClickable(
                                         onClick = {
                                             viewModel.setCustomModelName(preset)
@@ -283,7 +276,14 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                                             presetToDelete = preset
                                         }
                                     )
-                                )
+                                ) {
+                                    FilterChip(
+                                        selected = uiState.customModelName == preset,
+                                        onClick = { /* handled by parent Box */ },
+                                        label = { Text(preset) },
+                                        enabled = !uiState.isProcessing
+                                    )
+                                }
                             }
                         }
                         
