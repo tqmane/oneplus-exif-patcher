@@ -182,12 +182,18 @@ class WatermarkStyleParser(private val context: Context) {
             else -> safeElements.maxOf { it.height }.coerceAtLeast(1f)
         }
 
+        val bandOffsetY = style.offsetY ?: 0f
+
         return style.copy(
             id = style.id.ifBlank { fallbackId },
             name = style.name.ifBlank { fallbackId },
-            elements = normalizedElements,
+            elements = normalizedElements.map { element ->
+                element.copy(y = element.y + bandOffsetY)
+            },
             width = resolvedWidth,
-            height = resolvedHeight
+            height = resolvedHeight + bandOffsetY,
+            bottomBackgroundColor = style.bottomBackgroundColor ?: "#FFFFFF",
+            offsetY = bandOffsetY
         )
     }
 

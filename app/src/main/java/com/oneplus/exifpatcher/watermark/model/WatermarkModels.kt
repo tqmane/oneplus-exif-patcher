@@ -23,7 +23,13 @@ data class WatermarkStyle(
     val height: Float = 0f,
 
     @SerializedName("orientation")
-    val orientation: Int = 0  // 0=横, 1=縦
+    val orientation: Int = 0,  // 0=横, 1=縦
+
+    @SerializedName("bottomBackgroundColor")
+    val bottomBackgroundColor: String? = null,
+
+    @SerializedName("offsetY")
+    val offsetY: Float? = null
 )
 
 /**

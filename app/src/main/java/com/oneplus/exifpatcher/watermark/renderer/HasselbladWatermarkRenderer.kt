@@ -63,46 +63,27 @@ class HasselbladWatermarkRenderer(private val context: Context) {
         style: WatermarkStyle,
         cameraInfo: CameraInfo
     ): Bitmap {
-        val isHasselStyle1 = style.id.equals("hassel_style_1", ignoreCase = true)
-        val bottomMargin = if (isHasselStyle1) {
-            calculateHasselbladBottomMarginHeight(sourceBitmap.width, sourceBitmap.height)
-        } else {
-            0
-        }
+        val bandColor = resolveBandColor(style)
+        val bandHeight = resolveBandHeight(style, sourceBitmap.height)
 
         val resultBitmap = Bitmap.createBitmap(
             sourceBitmap.width,
-            sourceBitmap.height + bottomMargin,
+            sourceBitmap.height + bandHeight,
             Bitmap.Config.ARGB_8888
         )
         val canvas = Canvas(resultBitmap)
-
-        if (bottomMargin > 0) {
-            val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                this.style = Paint.Style.FILL
-                color = Color.WHITE
-            }
-            canvas.drawRect(
-                0f,
-                sourceBitmap.height.toFloat(),
-                resultBitmap.width.toFloat(),
-                resultBitmap.height.toFloat(),
-                backgroundPaint
-            )
-        }
-
         canvas.drawBitmap(sourceBitmap, 0f, 0f, null)
 
-        val layout = if (isHasselStyle1) {
-            calculateHasselbladLayout(
-                imageWidth = resultBitmap.width,
-                style = style,
-                marginTop = sourceBitmap.height,
-                marginHeight = bottomMargin
-            )
-        } else {
-            calculateLayout(resultBitmap.width, resultBitmap.height, style)
+        if (bandHeight > 0) {
+            val bandTop = sourceBitmap.height.toFloat()
+            val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                style = Paint.Style.FILL
+                color = bandColor
+            }
+            canvas.drawRect(0f, bandTop, resultBitmap.width.toFloat(), resultBitmap.height.toFloat(), backgroundPaint)
         }
+
+        val layout = calculateLayout(resultBitmap.width, resultBitmap.height, style, bandHeight)
 
         if (layout.scale <= 0f) {
             return resultBitmap
@@ -127,153 +108,52 @@ class HasselbladWatermarkRenderer(private val context: Context) {
     private fun calculateLayout(
         imageWidth: Int,
         imageHeight: Int,
-        style: WatermarkStyle
+        style: WatermarkStyle,
+        bandHeight: Int
     ): WatermarkLayout {
-        if (style.id.equals("hassel_style_1", ignoreCase = true)) {
-            return calculateDynamicWidthLayout(imageWidth, imageHeight, style)
-        }
-
-        val scale = calculateScale(imageWidth, imageHeight, style)
+        val scale = calculateDynamicWidthScale(imageWidth, imageHeight, style)
         if (scale <= 0f) {
             return WatermarkLayout(0f, 0f, 0f)
         }
-        val (originX, originY) = calculateOrigin(imageWidth, imageHeight, style, scale)
-        return WatermarkLayout(scale, originX, originY)
+
+        val (styleWidth, styleHeight) = resolveStyleSize(style)
+        val watermarkWidth = styleWidth * scale
+        val watermarkHeight = styleHeight * scale
+
+        val maxWidth = imageWidth * 0.9f
+        val targetWidth = watermarkWidth.coerceAtMost(maxWidth)
+        val adjustedScale = targetWidth / watermarkWidth
+
+        val horizontalMargin = (imageWidth - targetWidth) / 2f
+        val verticalMargin = if (bandHeight > 0) bandHeight * 0.32f else imageHeight * 0.08f
+
+        val originX = horizontalMargin
+        val originY = imageHeight - (watermarkHeight * adjustedScale) - verticalMargin
+
+        return WatermarkLayout(scale * adjustedScale, originX, originY)
     }
 
     /**
      * スケール計算
      */
-    private fun calculateScale(imageWidth: Int, imageHeight: Int, style: WatermarkStyle): Float {
-        // 画像の短辺を基準にスケールを計算
-        val baseSize = minOf(imageWidth, imageHeight)
-        val (styleWidth, styleHeight) = resolveStyleSize(style)
-        val styleBaseSize = if (style.orientation == 0) styleHeight else styleWidth
-
-        if (styleBaseSize <= 0f) {
-            return 0f
-        }
-
-        // ウォーターマークサイズは画像の10%程度に調整
-        return (baseSize * 0.1f) / styleBaseSize
-    }
-
-    private fun calculateDynamicWidthLayout(
+    private fun calculateDynamicWidthScale(
         imageWidth: Int,
         imageHeight: Int,
         style: WatermarkStyle
-    ): WatermarkLayout {
+    ): Float {
         val (styleWidth, styleHeight) = resolveStyleSize(style)
         if (styleWidth <= 0f || styleHeight <= 0f) {
-            return WatermarkLayout(0f, 0f, 0f)
+            return 0f
         }
 
         val horizontalMargin = (imageWidth * 0.045f).coerceAtLeast(16f)
         val verticalMargin = (imageHeight * 0.035f).coerceAtLeast(12f)
-
-        val availableWidth = imageWidth - horizontalMargin * 2f
-        if (availableWidth <= 0f) {
-            return WatermarkLayout(0f, 0f, 0f)
-        }
-
-        val heightRoom = (imageHeight - verticalMargin).coerceAtLeast(1f)
-        val maxHeight = minOf(heightRoom, imageHeight * 0.24f)
-        if (maxHeight <= 0f) {
-            return WatermarkLayout(0f, 0f, 0f)
-        }
-
-        val scaleByWidth = availableWidth / styleWidth
-        val scaleByHeight = maxHeight / styleHeight
-        val scale = minOf(scaleByWidth, scaleByHeight)
-        if (scale <= 0f) {
-            return WatermarkLayout(0f, 0f, 0f)
-        }
-
-        val watermarkWidth = styleWidth * scale
-        val watermarkHeight = styleHeight * scale
-        val widthLimited = scaleByWidth <= scaleByHeight
-
-        val originX = if (widthLimited) {
-            horizontalMargin
-        } else {
-            ((imageWidth - watermarkWidth) / 2f).coerceAtLeast(0f)
-        }
-
-        val originY = (imageHeight - verticalMargin - watermarkHeight)
-            .coerceAtLeast(0f)
-
-        return WatermarkLayout(scale, originX, originY)
-    }
-
-    private fun calculateHasselbladBottomMarginHeight(imageWidth: Int, imageHeight: Int): Int {
-        val ratio = if (imageWidth >= imageHeight) 0.19f else 0.23f
-        val computed = (imageWidth * ratio).toInt()
-        val minHeight = 160
-        val maxHeight = (imageHeight * 0.45f).toInt().coerceAtLeast(minHeight)
-        return computed.coerceIn(minHeight, maxHeight)
-    }
-
-    private fun calculateHasselbladLayout(
-        imageWidth: Int,
-        style: WatermarkStyle,
-        marginTop: Int,
-        marginHeight: Int
-    ): WatermarkLayout {
-        if (marginHeight <= 0) {
-            return calculateDynamicWidthLayout(imageWidth, marginTop, style)
-        }
-
-        val (styleWidth, styleHeight) = resolveStyleSize(style)
-        if (styleWidth <= 0f || styleHeight <= 0f) {
-            return WatermarkLayout(0f, 0f, 0f)
-        }
-
-        val horizontalMargin = (imageWidth * 0.05f).coerceAtLeast(24f)
-        val topPadding = (marginHeight * 0.22f).coerceAtLeast(18f)
-        val bottomPadding = (marginHeight * 0.18f).coerceAtLeast(16f)
-
         val availableWidth = (imageWidth - horizontalMargin * 2f).coerceAtLeast(1f)
-        val availableHeight = (marginHeight - topPadding - bottomPadding).coerceAtLeast(1f)
+        val availableHeight = (imageHeight * 0.24f).coerceAtLeast(1f)
 
         val scaleByWidth = availableWidth / styleWidth
         val scaleByHeight = availableHeight / styleHeight
-        val scale = minOf(scaleByWidth, scaleByHeight)
-        if (scale <= 0f) {
-            return WatermarkLayout(0f, 0f, 0f)
-        }
-
-        val watermarkWidth = styleWidth * scale
-        val watermarkHeight = styleHeight * scale
-        val originX = horizontalMargin + (availableWidth - watermarkWidth).coerceAtLeast(0f) / 2f
-        val extraHeightSpace = (availableHeight - watermarkHeight).coerceAtLeast(0f)
-        val originY = marginTop + topPadding + extraHeightSpace / 2f
-
-        return WatermarkLayout(scale, originX, originY)
-    }
-
-    private fun calculateOrigin(
-        imageWidth: Int,
-        imageHeight: Int,
-        style: WatermarkStyle,
-        scale: Float
-    ): Pair<Float, Float> {
-        val (styleWidth, styleHeight) = resolveStyleSize(style)
-        val watermarkWidth = styleWidth * scale
-        val watermarkHeight = styleHeight * scale
-        val margin = minOf(imageWidth, imageHeight) * 0.04f
-
-        val clampedWidth = watermarkWidth.coerceAtMost(imageWidth - margin * 2f)
-        val clampedHeight = watermarkHeight.coerceAtMost(imageHeight - margin * 2f)
-
-        val originX = when (style.orientation) {
-            1 -> imageWidth - margin - clampedWidth
-            else -> margin
-        }.coerceIn(margin, imageWidth - margin - clampedWidth)
-
-        val originY = (imageHeight - margin - clampedHeight)
-            .coerceIn(margin, imageHeight - margin - clampedHeight)
-
-        return originX to originY
+        return minOf(scaleByWidth, scaleByHeight)
     }
 
     private fun resolveStyleSize(style: WatermarkStyle): Pair<Float, Float> {
@@ -583,5 +463,26 @@ class HasselbladWatermarkRenderer(private val context: Context) {
             e.printStackTrace()
             null
         }
+    }
+
+    private fun resolveBandColor(style: WatermarkStyle): Int {
+        val colorString = style.bottomBackgroundColor
+        if (!colorString.isNullOrBlank()) {
+            runCatching { Color.parseColor(colorString) }.getOrNull()?.let { return it }
+        }
+
+        return if (style.id.contains("dark", ignoreCase = true)) {
+            Color.parseColor("#101010")
+        } else {
+            Color.WHITE
+        }
+    }
+
+    private fun resolveBandHeight(style: WatermarkStyle, imageHeight: Int): Int {
+        val baseRatio = if (style.id.contains("hassel", ignoreCase = true)) 0.18f else 0.12f
+        val ratio = style.offsetY?.takeIf { it > 0f }?.let { offset ->
+            (offset / 360f).coerceIn(0.05f, 0.25f)
+        } ?: baseRatio
+        return (imageHeight * ratio).toInt()
     }
 }

@@ -283,7 +283,8 @@ object ExifPatcher {
     private fun transcodeToJpeg(context: Context, sourceUri: Uri, targetFile: File): Pair<Int, Int>? {
         val orientation = readExifOrientation(context, sourceUri)
         val bitmap = decodeBitmap(context, sourceUri) ?: return null
-        val orientedBitmap = applyExifOrientation(bitmap, orientation)
+        val needsManualOrientation = Build.VERSION.SDK_INT < Build.VERSION_CODES.P && orientation != ExifInterface.ORIENTATION_NORMAL && orientation != ExifInterface.ORIENTATION_UNDEFINED
+        val orientedBitmap = if (needsManualOrientation) applyExifOrientation(bitmap, orientation) else bitmap
         return try {
             FileOutputStream(targetFile).use { output ->
                 if (!orientedBitmap.compress(Bitmap.CompressFormat.JPEG, 95, output)) {
