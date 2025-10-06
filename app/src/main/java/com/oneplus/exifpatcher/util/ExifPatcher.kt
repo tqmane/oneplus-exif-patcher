@@ -3,10 +3,17 @@ package com.oneplus.exifpatcher.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.graphics.Matrix
 import android.net.Uri
+import android.os.Build
+import android.provider.OpenableColumns
+import android.webkit.MimeTypeMap
+
 import androidx.documentfile.provider.DocumentFile
 import androidx.exifinterface.media.ExifInterface
 import com.oneplus.exifpatcher.watermark.HasselbladWatermarkManager
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -52,7 +59,7 @@ object ExifPatcher {
         var watermarkedFile: File? = null
 
         return try {
-            if (!copyFromUri(context, sourceUri, tempFile)) {
+            if (!prepareWorkingFile(context, sourceUri, tempFile)) {
                 destinationFile.delete()
                 return false
             }
@@ -245,6 +252,198 @@ object ExifPatcher {
                 destination.setAttribute(tag, value)
             }
         }
+    }
+
+    private fun prepareWorkingFile(context: Context, sourceUri: Uri, targetFile: File): Boolean {
+        val mimeType = resolveMimeType(context, sourceUri)
+        val extension = resolveFileExtension(context, sourceUri)
+        return if (!shouldTranscodeToJpeg(mimeType, extension)) {
+            copyFromUri(context, sourceUri, targetFile)
+        } else {
+            transcodeToJpeg(context, sourceUri, targetFile) != null
+        }
+    }
+
+    private fun shouldTranscodeToJpeg(mimeType: String?, extension: String?): Boolean {
+        val lowerMime = mimeType?.lowercase(Locale.ROOT)
+        if (lowerMime != null) {
+            if (lowerMime.contains("jpeg") || lowerMime.contains("jpg")) {
+                return false
+            }
+            if (lowerMime.contains("heic") || lowerMime.contains("heif") || lowerMime.contains("hevc")) {
+                return true
+            }
+            return false
+        }
+
+        val lowerExt = extension?.lowercase(Locale.ROOT)
+        return lowerExt == "heic" || lowerExt == "heif" || lowerExt == "hevc"
+    }
+
+    private fun transcodeToJpeg(context: Context, sourceUri: Uri, targetFile: File): Pair<Int, Int>? {
+        val orientation = readExifOrientation(context, sourceUri)
+        val bitmap = decodeBitmap(context, sourceUri) ?: return null
+        val orientedBitmap = applyExifOrientation(bitmap, orientation)
+        return try {
+            FileOutputStream(targetFile).use { output ->
+                if (!orientedBitmap.compress(Bitmap.CompressFormat.JPEG, 95, output)) {
+                    return null
+                }
+            }
+            // Update EXIF with original attributes after transcode
+            copyExifFromSource(context, sourceUri, targetFile, resetOrientation = true, newDimensions = orientedBitmap.width to orientedBitmap.height)
+            orientedBitmap.width to orientedBitmap.height
+        } catch (t: Throwable) {
+            t.printStackTrace()
+            null
+        } finally {
+            if (orientedBitmap !== bitmap && !orientedBitmap.isRecycled) {
+                orientedBitmap.recycle()
+            }
+            if (!bitmap.isRecycled) {
+                bitmap.recycle()
+            }
+        }
+    }
+
+    private fun readExifOrientation(context: Context, uri: Uri): Int {
+        return runCatching {
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                ExifInterface(input).getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_UNDEFINED
+                )
+            }
+        }.getOrNull() ?: ExifInterface.ORIENTATION_UNDEFINED
+    }
+
+    private fun applyExifOrientation(bitmap: Bitmap, orientation: Int): Bitmap {
+        val matrix = Matrix()
+        val transformNeeded = when (orientation) {
+            ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> {
+                matrix.setScale(-1f, 1f)
+                true
+            }
+            ExifInterface.ORIENTATION_ROTATE_180 -> {
+                matrix.setRotate(180f)
+                true
+            }
+            ExifInterface.ORIENTATION_FLIP_VERTICAL -> {
+                matrix.setScale(1f, -1f)
+                true
+            }
+            ExifInterface.ORIENTATION_TRANSPOSE -> {
+                matrix.setRotate(90f)
+                matrix.postScale(-1f, 1f)
+                true
+            }
+            ExifInterface.ORIENTATION_ROTATE_90 -> {
+                matrix.setRotate(90f)
+                true
+            }
+            ExifInterface.ORIENTATION_TRANSVERSE -> {
+                matrix.setRotate(-90f)
+                matrix.postScale(-1f, 1f)
+                true
+            }
+            ExifInterface.ORIENTATION_ROTATE_270 -> {
+                matrix.setRotate(270f)
+                true
+            }
+            else -> false
+        }
+
+        if (!transformNeeded) {
+            return bitmap
+        }
+
+        return try {
+            Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+        } catch (t: Throwable) {
+            t.printStackTrace()
+            bitmap
+        }
+    }
+
+
+    private fun decodeBitmap(context: Context, uri: Uri): Bitmap? {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val source = ImageDecoder.createSource(context.contentResolver, uri)
+                ImageDecoder.decodeBitmap(source)
+            } else {
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    BitmapFactory.decodeStream(input)
+                }
+            }
+        } catch (t: Throwable) {
+            t.printStackTrace()
+            null
+        }
+    }
+
+    private fun copyExifFromSource(
+        context: Context,
+        sourceUri: Uri,
+        destinationFile: File,
+        resetOrientation: Boolean,
+        newDimensions: Pair<Int, Int>?
+    ) {
+        runCatching {
+            context.contentResolver.openInputStream(sourceUri)?.use { input ->
+                val sourceExif = ExifInterface(input)
+                val destinationExif = ExifInterface(destinationFile.absolutePath)
+                copyExifData(sourceExif, destinationExif)
+                if (resetOrientation) {
+                    destinationExif.setAttribute(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL.toString()
+                    )
+                }
+                newDimensions?.let { (width, height) ->
+                    destinationExif.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, width.toString())
+                    destinationExif.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, height.toString())
+                    destinationExif.setAttribute(ExifInterface.TAG_PIXEL_X_DIMENSION, width.toString())
+                    destinationExif.setAttribute(ExifInterface.TAG_PIXEL_Y_DIMENSION, height.toString())
+                }
+                destinationExif.saveAttributes()
+            }
+        }
+    }
+
+    private fun resolveMimeType(context: Context, uri: Uri): String? {
+        context.contentResolver.getType(uri)?.let { return it }
+
+        val extension = resolveFileExtension(context, uri)
+        return extension?.let { ext ->
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext.lowercase(Locale.ROOT))
+        }
+    }
+
+    private fun resolveFileExtension(context: Context, uri: Uri): String? {
+        context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1 && cursor.moveToFirst()) {
+                cursor.getString(nameIndex)?.let { name ->
+                    extractExtension(name)?.let { return it }
+                }
+            }
+        }
+
+        uri.lastPathSegment?.let { segment ->
+            extractExtension(segment)?.let { return it }
+        }
+
+        val decoded = Uri.decode(uri.toString())
+        return extractExtension(decoded)
+    }
+
+    private fun extractExtension(fileName: String): String? {
+        val dotIndex = fileName.lastIndexOf('.')
+        if (dotIndex in 0 until fileName.length - 1) {
+            return fileName.substring(dotIndex + 1)
+        }
+        return null
     }
 
     private fun resolveOutputFileName(context: Context, uri: Uri, index: Int): String {

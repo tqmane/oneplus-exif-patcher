@@ -91,6 +91,21 @@ android {
     }
 }
 
+// Automatically copy extracted OxygenOS watermark styles (JSON) into assets if present
+val syncWatermarkStyles by tasks.registering(Copy::class) {
+    val sourceDir = rootDir.resolve("photo/gallery_extracted/assets/watermark_master_styles")
+    val targetDir = projectDir.resolve("src/main/assets/watermark_master_styles")
+    from(sourceDir) {
+        include("**/*.json")
+    }
+    into(targetDir)
+    onlyIf { sourceDir.exists() }
+}
+
+tasks.matching { it.name == "preBuild" }.configureEach {
+    dependsOn(syncWatermarkStyles)
+}
+
 dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
