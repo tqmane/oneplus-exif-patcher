@@ -57,13 +57,16 @@ object ExifPatcher {
                 return false
             }
 
+            // First, apply EXIF patches so that watermark rendering can read updated metadata
+            applyExifPatches(context, sourceUri, tempFile, customModelName)
+
+            // Then, apply watermark (if any). This function copies EXIF from the provided file,
+            // so running it after EXIF patching ensures the updated Model is used and preserved.
             val fileAfterWatermark = applyWatermarkIfNeeded(context, tempFile, watermarkStyleId)
             if (fileAfterWatermark != tempFile) {
                 workingFile = fileAfterWatermark
                 watermarkedFile = fileAfterWatermark
             }
-
-            applyExifPatches(context, sourceUri, workingFile, customModelName)
 
             if (!copyToDestination(context, workingFile, destinationFile)) {
                 destinationFile.delete()
