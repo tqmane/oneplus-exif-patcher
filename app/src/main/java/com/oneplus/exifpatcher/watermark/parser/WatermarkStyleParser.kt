@@ -341,7 +341,9 @@ class WatermarkStyleParser(private val context: Context) {
                 fontWeight = fontWeight,
                 textAlign = null,
                 color = primaryColor,
-                alpha = alpha
+                alpha = alpha,
+                letterSpacing = paint?.letterSpacing,
+                lineHeight = paint?.lineHeight
             )
             "image" -> LegacyRenderableElement(
                 type = "image",
@@ -486,7 +488,9 @@ class WatermarkStyleParser(private val context: Context) {
         val strokeColor: String? = null,
         val strokeWidth: Float? = null,
         val cornerRadius: Float? = null,
-        val rotation: Float? = null
+        val rotation: Float? = null,
+        val letterSpacing: Float? = null,
+        val lineHeight: Float? = null
     ) {
         fun toWatermarkElement(normalizedX: Float, normalizedY: Float): com.oneplus.exifpatcher.watermark.model.WatermarkElement {
             return com.oneplus.exifpatcher.watermark.model.WatermarkElement(
@@ -509,7 +513,9 @@ class WatermarkStyleParser(private val context: Context) {
                 strokeColor = strokeColor,
                 strokeWidth = strokeWidth,
                 cornerRadius = cornerRadius,
-                rotation = rotation
+                rotation = rotation,
+                letterSpacing = letterSpacing,
+                lineHeight = lineHeight
             )
         }
     }

@@ -81,6 +81,12 @@ class HasselbladWatermarkRenderer(private val context: Context) {
                 color = bandColor
             }
             canvas.drawRect(0f, bandTop, resultBitmap.width.toFloat(), resultBitmap.height.toFloat(), backgroundPaint)
+
+            val dividerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.parseColor("#22000000")
+                strokeWidth = 1f
+            }
+            canvas.drawLine(0f, bandTop, resultBitmap.width.toFloat(), bandTop, dividerPaint)
         }
 
         val layout = calculateLayout(resultBitmap.width, resultBitmap.height, style, bandHeight)
@@ -125,7 +131,7 @@ class HasselbladWatermarkRenderer(private val context: Context) {
         val adjustedScale = targetWidth / watermarkWidth
 
         val horizontalMargin = (imageWidth - targetWidth) / 2f
-        val verticalMargin = if (bandHeight > 0) bandHeight * 0.32f else imageHeight * 0.08f
+        val verticalMargin = if (bandHeight > 0) bandHeight * 0.28f else imageHeight * 0.08f
 
         val originX = horizontalMargin
         val originY = imageHeight - (watermarkHeight * adjustedScale) - verticalMargin

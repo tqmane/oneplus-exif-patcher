@@ -76,6 +76,12 @@ data class WatermarkElement(
     
     @SerializedName("alpha")
     val alpha: Float? = 1.0f,
+
+    @SerializedName("letterSpacing")
+    val letterSpacing: Float? = null,
+
+    @SerializedName("lineHeight")
+    val lineHeight: Float? = null,
     
     // 画像要素用
     @SerializedName("bitmap")
