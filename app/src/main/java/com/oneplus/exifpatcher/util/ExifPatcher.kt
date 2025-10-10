@@ -26,6 +26,7 @@ import java.util.Locale
 object ExifPatcher {
 
     private const val JPEG_MIME_TYPE = "image/jpeg"
+    private const val PATCHED_SUFFIX = "_Patched"
     private const val MAKE = "OnePlus"
     private const val USER_COMMENT = "oplus_1048864"
     private const val DEVICE_VALUE = "0xcdcc8c3fff"
@@ -53,7 +54,11 @@ object ExifPatcher {
             return false
         }
 
-        val destinationFile = destinationDir.createFile(JPEG_MIME_TYPE, fileName) ?: return false
+        val patchedFileName = ensurePatchedSuffix(fileName)
+        val destinationMime = mimeTypeFromFileName(patchedFileName)
+            ?: resolveMimeType(context, sourceUri)
+            ?: JPEG_MIME_TYPE
+        val destinationFile = destinationDir.createFile(destinationMime, patchedFileName) ?: return false
         val tempFile = File(context.cacheDir, "exifpatcher_${System.currentTimeMillis()}.jpg")
         var workingFile: File = tempFile
         var watermarkedFile: File? = null
@@ -448,16 +453,51 @@ object ExifPatcher {
     }
 
     private fun resolveOutputFileName(context: Context, uri: Uri, index: Int): String {
-        val nameFromDocument = DocumentFile.fromSingleUri(context, uri)?.name
-        val candidate = nameFromDocument ?: uri.lastPathSegment
-        if (!candidate.isNullOrBlank()) {
-            val lower = candidate.lowercase(Locale.ROOT)
-            if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) {
-                return candidate
+        val nameFromDocument = DocumentFile.fromSingleUri(context, uri)?.name?.takeIf { it.isNotBlank() }
+        val rawCandidate = nameFromDocument
+            ?: uri.lastPathSegment?.takeIf { it.isNotBlank() }
+            ?: Uri.decode(uri.toString()).substringAfterLast('/')
+
+        val candidate = rawCandidate?.takeIf { it.isNotBlank() }
+        val candidateExtension = candidate?.let { extractExtension(it) }
+        val extension = candidateExtension
+            ?: resolveFileExtension(context, uri)
+
+        val baseName = candidate?.let {
+            if (candidateExtension != null && candidateExtension.length < it.length) {
+                it.substring(0, it.length - candidateExtension.length - 1)
+            } else {
+                it
             }
+        }?.takeIf { it.isNotBlank() }
+            ?: "patched_${System.currentTimeMillis()}_$index"
+
+        val initialName = if (!extension.isNullOrBlank()) {
+            "$baseName.$extension"
+        } else {
+            baseName
         }
 
-        return "patched_${System.currentTimeMillis()}_$index.jpg"
+        return ensurePatchedSuffix(initialName)
+    }
+
+    private fun ensurePatchedSuffix(fileName: String): String {
+        val dotIndex = fileName.lastIndexOf('.')
+        val baseName = if (dotIndex > 0) fileName.substring(0, dotIndex) else fileName
+        if (baseName.endsWith(PATCHED_SUFFIX)) {
+            return fileName
+        }
+
+        return if (dotIndex > 0) {
+            baseName + PATCHED_SUFFIX + fileName.substring(dotIndex)
+        } else {
+            baseName + PATCHED_SUFFIX
+        }
+    }
+
+    private fun mimeTypeFromFileName(fileName: String): String? {
+        val extension = extractExtension(fileName)?.lowercase(Locale.ROOT) ?: return null
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
     }
 
     private val EXIF_TAGS_TO_COPY = listOf(
@@ -486,3 +526,4 @@ object ExifPatcher {
         ExifInterface.TAG_WHITE_BALANCE
     )
 }
+
