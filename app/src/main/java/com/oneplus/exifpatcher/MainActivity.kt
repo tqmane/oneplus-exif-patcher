@@ -266,25 +266,24 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             uiState.modelPresets.forEach { preset ->
-                                Box(
+                                val onPresetSelected = {
+                                    viewModel.setCustomModelName(preset)
+                                    showAddButton = false
+                                }
+
+                                FilterChip(
+                                    selected = uiState.customModelName == preset,
+                                    onClick = onPresetSelected,
+                                    label = { Text(preset) },
+                                    enabled = !uiState.isProcessing,
                                     modifier = Modifier.combinedClickable(
                                         enabled = !uiState.isProcessing,
-                                        onClick = {
-                                            viewModel.setCustomModelName(preset)
-                                            showAddButton = false
-                                        },
+                                        onClick = onPresetSelected,
                                         onLongClick = {
                                             presetToDelete = preset
                                         }
                                     )
-                                ) {
-                                    FilterChip(
-                                        selected = uiState.customModelName == preset,
-                                        onClick = {},
-                                        label = { Text(preset) },
-                                        enabled = !uiState.isProcessing
-                                    )
-                                }
+                                )
                             }
                         }
                         
