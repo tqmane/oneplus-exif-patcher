@@ -84,7 +84,6 @@ object ExifPatcher {
                 destinationFile.delete()
                 return false
             }
-
             true
         } catch (t: Throwable) {
             t.printStackTrace()

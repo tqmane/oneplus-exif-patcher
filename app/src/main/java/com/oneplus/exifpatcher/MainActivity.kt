@@ -11,7 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -23,6 +23,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.asImageBitmap
@@ -266,24 +267,30 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             uiState.modelPresets.forEach { preset ->
-                                val onPresetSelected = {
-                                    viewModel.setCustomModelName(preset)
-                                    showAddButton = false
+                                val onSelect: () -> Unit = {
+                                    if (!uiState.isProcessing) {
+                                        viewModel.setCustomModelName(preset)
+                                        showAddButton = false
+                                    }
                                 }
 
-                                FilterChip(
-                                    selected = uiState.customModelName == preset,
-                                    onClick = onPresetSelected,
-                                    label = { Text(preset) },
-                                    enabled = !uiState.isProcessing,
-                                    modifier = Modifier.combinedClickable(
-                                        enabled = !uiState.isProcessing,
-                                        onClick = onPresetSelected,
-                                        onLongClick = {
-                                            presetToDelete = preset
-                                        }
+                                val gestureModifier = Modifier.pointerInput(uiState.isProcessing, preset) {
+                                    if (!uiState.isProcessing) {
+                                        detectTapGestures(
+                                            onTap = { onSelect() },
+                                            onLongPress = { presetToDelete = preset }
+                                        )
+                                    }
+                                }
+
+                                Box(modifier = gestureModifier) {
+                                    FilterChip(
+                                        selected = uiState.customModelName == preset,
+                                        onClick = onSelect,
+                                        label = { Text(preset) },
+                                        enabled = !uiState.isProcessing
                                     )
-                                )
+                                }
                             }
                         }
                         
