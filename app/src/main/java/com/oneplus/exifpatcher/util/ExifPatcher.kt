@@ -27,6 +27,7 @@ object ExifPatcher {
 
     private const val JPEG_MIME_TYPE = "image/jpeg"
     private const val PATCHED_SUFFIX = "_Patched"
+    private val INVALID_FILENAME_CHARS = Regex("[\\\\/:*?\"<>|]")
     private const val MAKE = "OnePlus"
     private const val USER_COMMENT = "oplus_1048864"
     private const val DEVICE_VALUE = "0xcdcc8c3fff"
@@ -452,32 +453,35 @@ object ExifPatcher {
     }
 
     private fun resolveOutputFileName(context: Context, uri: Uri, index: Int): String {
-        val nameFromDocument = DocumentFile.fromSingleUri(context, uri)?.name?.takeIf { it.isNotBlank() }
-        val rawCandidate = nameFromDocument
-            ?: uri.lastPathSegment?.takeIf { it.isNotBlank() }
+        resolveDisplayName(context, uri)?.takeIf { it.isNotBlank() }?.let { name ->
+            sanitizeFileName(name).takeIf { it.isNotBlank() }?.let { sanitized ->
+                return ensurePatchedSuffix(sanitized)
+            }
+        }
+
+        val extension = resolveFileExtension(context, uri)
+        val fallbackSource = DocumentFile.fromSingleUri(context, uri)?.name
+            ?: uri.lastPathSegment
             ?: Uri.decode(uri.toString()).substringAfterLast('/')
 
-        val candidate = rawCandidate?.takeIf { it.isNotBlank() }
-        val candidateExtension = candidate?.let { extractExtension(it) }
-        val extension = candidateExtension
-            ?: resolveFileExtension(context, uri)
-
-        val baseName = candidate?.let {
-            if (candidateExtension != null && candidateExtension.length < it.length) {
-                it.substring(0, it.length - candidateExtension.length - 1)
+        val sanitizedSource = fallbackSource?.let { sanitizeFileName(it) }?.takeIf { it.isNotBlank() }
+        val baseName = sanitizedSource?.let { source ->
+            val extLower = extension?.lowercase(Locale.ROOT)
+            if (!extLower.isNullOrEmpty() && source.lowercase(Locale.ROOT).endsWith(".$extLower")) {
+                source.substring(0, source.length - extLower.length - 1)
             } else {
-                it
+                source
             }
         }?.takeIf { it.isNotBlank() }
             ?: "patched_${System.currentTimeMillis()}_$index"
 
-        val initialName = if (!extension.isNullOrBlank()) {
+        val candidate = if (!extension.isNullOrBlank()) {
             "$baseName.$extension"
         } else {
             baseName
         }
 
-        return ensurePatchedSuffix(initialName)
+        return ensurePatchedSuffix(candidate)
     }
 
     private fun ensurePatchedSuffix(fileName: String): String {
@@ -487,16 +491,32 @@ object ExifPatcher {
             return fileName
         }
 
+        val sanitizedBase = sanitizeFileName(baseName).ifEmpty { baseName }
+        val suffixBase = if (sanitizedBase.isNotEmpty()) sanitizedBase else {
+            val fallbackBase = "patched_${System.currentTimeMillis()}"
+            baseName.takeIf { it.isNotBlank() } ?: fallbackBase
+        }
+
         return if (dotIndex > 0) {
-            baseName + PATCHED_SUFFIX + fileName.substring(dotIndex)
+            suffixBase + PATCHED_SUFFIX + fileName.substring(dotIndex)
         } else {
-            baseName + PATCHED_SUFFIX
+            suffixBase + PATCHED_SUFFIX
         }
     }
 
     private fun mimeTypeFromFileName(fileName: String): String? {
         val extension = extractExtension(fileName)?.lowercase(Locale.ROOT) ?: return null
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+    }
+
+    private fun sanitizeFileName(name: String): String {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return ""
+        var sanitized = trimmed.replace(INVALID_FILENAME_CHARS, "_")
+        while (sanitized.contains("__")) {
+            sanitized = sanitized.replace("__", "_")
+        }
+        return sanitized.trim('_')
     }
 
     private val EXIF_TAGS_TO_COPY = listOf(
