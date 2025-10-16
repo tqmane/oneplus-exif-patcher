@@ -456,10 +456,10 @@ object ExifPatcher {
     }
 
     private fun resolveOutputFileName(context: Context, uri: Uri, index: Int): String {
-        resolveDisplayName(context, uri)?.takeIf { it.isNotBlank() }?.let { name ->
-            sanitizeFileName(name).takeIf { it.isNotBlank() }?.let { sanitized ->
-                return ensurePatchedSuffix(sanitized)
-            }
+        val resolvedDisplayName = resolveDisplayName(context, uri)
+        val sanitizedDisplayName = resolvedDisplayName?.let { sanitizeFileName(it) }?.takeIf { it.isNotBlank() }
+        if (sanitizedDisplayName != null) {
+            return ensurePatchedSuffix(sanitizedDisplayName)
         }
 
         val extension = resolveFileExtension(context, uri)
@@ -524,24 +524,21 @@ object ExifPatcher {
 
     private fun removeLensMetadata(exif: ExifInterface) {
         exif.setAttribute(ExifInterface.TAG_LENS_MODEL, null)
-        runCatching {
-            exif.setAttribute(ExifInterface.TAG_LENS_MAKE, null)
-        }
-        runCatching {
-            exif.setAttribute(ExifInterface.TAG_LENS_SERIAL_NUMBER, null)
-        }
-        runCatching {
-            exif.setAttribute(ExifInterface.TAG_LENS_SPECIFICATION, null)
+    }
+
+    private fun resolveDisplayName(context: Context, uri: Uri): String? {
+        context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1 && cursor.moveToFirst()) {
+                cursor.getString(nameIndex)?.takeIf { it.isNotBlank() }?.let { return it }
+            }
         }
 
-        val currentXmp = exif.getAttribute(ExifInterface.TAG_XMP) ?: return
-        val lensRegex = Regex("<(?:(?:aux:)?LensModel|LensMake|LensSpecification|aux:Lens)\\b[^>]*>.*?</[^>]+>", RegexOption.IGNORE_CASE or RegexOption.DOT_MATCHES_ALL)
-        val updatedXmp = lensRegex.replace(currentXmp, "").let { cleaned ->
-            cleaned.replace(Regex("\\s+</rdf:Description>"), "\n</rdf:Description>")
-        }
-        if (updatedXmp != currentXmp) {
-            exif.setAttribute(ExifInterface.TAG_XMP, updatedXmp.trim())
-        }
+        DocumentFile.fromSingleUri(context, uri)?.name?.takeIf { !it.isNullOrBlank() }?.let { return it }
+        uri.lastPathSegment?.takeIf { !it.isNullOrBlank() }?.let { return it }
+
+        val decoded = Uri.decode(uri.toString())
+        return decoded.substringAfterLast('/', "").takeIf { it.isNotBlank() }
     }
 
     private val EXIF_TAGS_TO_COPY = listOf(
