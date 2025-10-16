@@ -202,6 +202,8 @@ object ExifPatcher {
         exif.setAttribute(ExifInterface.TAG_MAKE, MAKE)
         exif.setAttribute(ExifInterface.TAG_USER_COMMENT, USER_COMMENT)
 
+        removeLensMetadata(exif)
+
         val sanitizedModel = customModelName?.takeUnless { it.isBlank() }
         if (sanitizedModel != null) {
             exif.setAttribute(ExifInterface.TAG_MODEL, sanitizedModel)
@@ -412,6 +414,7 @@ object ExifPatcher {
                     destinationExif.setAttribute(ExifInterface.TAG_PIXEL_X_DIMENSION, width.toString())
                     destinationExif.setAttribute(ExifInterface.TAG_PIXEL_Y_DIMENSION, height.toString())
                 }
+            removeLensMetadata(destinationExif)
                 destinationExif.saveAttributes()
             }
         }
@@ -517,6 +520,28 @@ object ExifPatcher {
             sanitized = sanitized.replace("__", "_")
         }
         return sanitized.trim('_')
+    }
+
+    private fun removeLensMetadata(exif: ExifInterface) {
+        exif.setAttribute(ExifInterface.TAG_LENS_MODEL, null)
+        runCatching {
+            exif.setAttribute(ExifInterface.TAG_LENS_MAKE, null)
+        }
+        runCatching {
+            exif.setAttribute(ExifInterface.TAG_LENS_SERIAL_NUMBER, null)
+        }
+        runCatching {
+            exif.setAttribute(ExifInterface.TAG_LENS_SPECIFICATION, null)
+        }
+
+        val currentXmp = exif.getAttribute(ExifInterface.TAG_XMP) ?: return
+        val lensRegex = Regex("<(?:(?:aux:)?LensModel|LensMake|LensSpecification|aux:Lens)\\b[^>]*>.*?</[^>]+>", RegexOption.IGNORE_CASE or RegexOption.DOT_MATCHES_ALL)
+        val updatedXmp = lensRegex.replace(currentXmp, "").let { cleaned ->
+            cleaned.replace(Regex("\\s+</rdf:Description>"), "\n</rdf:Description>")
+        }
+        if (updatedXmp != currentXmp) {
+            exif.setAttribute(ExifInterface.TAG_XMP, updatedXmp.trim())
+        }
     }
 
     private val EXIF_TAGS_TO_COPY = listOf(
